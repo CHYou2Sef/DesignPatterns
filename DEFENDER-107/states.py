@@ -53,7 +53,10 @@ class MenuState(GameState):
         # Fetch in a separate thread optionally, but for simplicity we'll try a quick timeout here
         # or just do it blocking for a moment (it's a menu)
         try:
-            r = requests.get("http://127.0.0.1:5000/leaderboard", timeout=1)
+            # Re-use the URL from APILogger to avoid hardcoding it in two places
+            # APILogger()._url ends in /log, so we swap it for /leaderboard
+            lb_url = APILogger()._url.replace("/log", "/leaderboard")
+            r = requests.get(lb_url, timeout=1)
             if r.status_code == 200:
                 self.top_scores = r.json()
         except:

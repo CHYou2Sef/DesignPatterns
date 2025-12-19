@@ -4,8 +4,8 @@ import threading
 
 class APILogger:
     _instance = None
-    _url = "http://127.0.0.1:5000/log"
-    _api_key = "my-secret-dev-key" # Hardcoded for now, or could load from a separate config file
+    _url = "https://designpatterns.onrender.com/log"
+    _api_key = "Defender-gamo-pwd-2025" # Hardcoded for now, or could load from a separate config file
 
     def __new__(cls):
         if cls._instance is None:
@@ -31,7 +31,9 @@ class APILogger:
             try:
                 headers = {"X-API-KEY": self._api_key}
                 payload = {"username": username, "score": score}
-                requests.post("http://127.0.0.1:5000/score", json=payload, headers=headers, timeout=2)
+                # Use base URL logic to replace /log with /score
+                score_url = self._url.replace("/log", "/score")
+                requests.post(score_url, json=payload, headers=headers, timeout=2)
             except Exception as e:
                 print(f"Score submission failed: {e}")
         
