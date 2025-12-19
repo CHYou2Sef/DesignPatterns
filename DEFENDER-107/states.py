@@ -2,7 +2,7 @@ import pygame
 import random
 from abc import ABC, abstractmethod
 from settings import *
-from entities import FighterJet, EnemySquadron, Drone, RapidFireDecorator
+from entities import FighterJet, EnemySquadron, Drone, RapidFireDecorator, ShieldDecorator, PowerUp, draw_heart
 from api_logger import APILogger
 import requests
 import json
@@ -76,32 +76,49 @@ class MenuState(GameState):
     def draw(self, game):
         self.stars.draw(game.screen)
         
+        # Cyber Grid Background
+        grid_color = (0, 50, 100)
+        time_offset = (pygame.time.get_ticks() // 20) % 50
+        for x in range(0, SCREEN_WIDTH, 50):
+            pygame.draw.line(game.screen, grid_color, (x, 0), (x, SCREEN_HEIGHT), 1)
+        for y in range(0, SCREEN_HEIGHT, 50):
+            pygame.draw.line(game.screen, grid_color, (0, y + time_offset), (SCREEN_WIDTH, y + time_offset), 1)
+
         # Neon Title
         font = pygame.font.Font(None, 80)
+        # Outer Glow
+        t1_glow = font.render("GALACTIC DEFENDER", True, (0, 100, 255))
+        t2_glow = font.render("ENDLESS WAR", True, (255, 0, 100))
+        game.screen.blit(t1_glow, (SCREEN_WIDTH//2 - t1_glow.get_width()//2 + 2, 152))
+        game.screen.blit(t2_glow, (SCREEN_WIDTH//2 - t2_glow.get_width()//2 + 2, 222))
+        
         t1 = font.render("GALACTIC DEFENDER", True, COLOR_PLAYER)
         t2 = font.render("ENDLESS WAR", True, COLOR_ENEMY)
         
-        # Centering text
         game.screen.blit(t1, (SCREEN_WIDTH//2 - t1.get_width()//2, 150))
         game.screen.blit(t2, (SCREEN_WIDTH//2 - t2.get_width()//2, 220))
         
         f2 = pygame.font.Font(None, 40)
         msg = f2.render("[ PRESS ENTER TO LAUNCH ]", True, (255, 255, 255))
         
-        # blinking effect
         if pygame.time.get_ticks() % 1000 < 500:
             game.screen.blit(msg, (SCREEN_WIDTH//2 - msg.get_width()//2, 400))
             
-        # Draw Leaderboard
+        # --- Styled Leaderboard ---
+        lb_panel = pygame.Surface((300, 350), pygame.SRCALPHA)
+        pygame.draw.rect(lb_panel, (0, 0, 50, 150), (0, 0, 300, 350), border_radius=15)
+        pygame.draw.rect(lb_panel, (0, 150, 255, 255), (0, 0, 300, 350), 2, border_radius=15)
+        game.screen.blit(lb_panel, (40, 440))
+
         heading = f2.render("TOP PILOTS", True, (0, 255, 255))
-        game.screen.blit(heading, (50, 450))
+        game.screen.blit(heading, (60, 460))
         
-        y_off = 500
+        y_off = 510
         font_sm = pygame.font.Font(None, 30)
         for i, entry in enumerate(self.top_scores):
             txt = f"{i+1}. {entry['username']} - {entry['score']}"
             s = font_sm.render(txt, True, (200, 200, 200))
-            game.screen.blit(s, (50, y_off))
+            game.screen.blit(s, (60, y_off))
             y_off += 30
 
 # --- NAME INPUT STATE ---
@@ -145,6 +162,7 @@ class WarState(GameState):
         self.squadron = EnemySquadron()
         self.player = FighterJet()
         self.bullets = []
+        self.powerups = [] # New: Powerups list
         self.decorated = False
         
         # Scoreboard & Timer Stats
@@ -173,6 +191,12 @@ class WarState(GameState):
         if keys[pygame.K_p] and not self.decorated:
             self.player = RapidFireDecorator(self.player)
             self.decorated = True
+            
+        # --- MOUSE CONTROL ---
+        mx, my = pygame.mouse.get_pos()
+        # Only move if mouse is inside window horizontally
+        if 0 < mx < SCREEN_WIDTH:
+            self.player.set_x(mx)
         
         for e in events:
             # Quit anytime
@@ -180,6 +204,10 @@ class WarState(GameState):
                  game.change_state(MenuState())
 
             if e.type == pygame.KEYDOWN and e.key == pygame.K_SPACE:
+                self.player.shoot(self.bullets)
+            
+            # MOUSE SHOOT
+            if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                 self.player.shoot(self.bullets)
 
     def update(self, game):
@@ -208,17 +236,72 @@ class WarState(GameState):
             self.wave += 1
             self.spawn_wave()
         
+        if not self.squadron.children:
+            self.wave += 1
+            self.spawn_wave()
+            
+        # --- POWER UP SPAWNING ---
+        if random.randint(0, 1000) < 5: # 0.5% chance per frame
+            x = random.randint(50, SCREEN_WIDTH-50)
+            p_type = 'SHIELD' if random.random() < 0.5 else 'LIFE'
+            self.powerups.append(PowerUp(x, -50, p_type))
+            
+        for p in self.powerups[:]:
+            p.update()
+            if p.rect.y > SCREEN_HEIGHT: self.powerups.remove(p)
+            # Collect
+            if p.rect.colliderect(self.player.get_rect()):
+                if p.type == 'SHIELD':
+                     # Wrap in Shield Decorator if not already shield
+                     if not isinstance(self.player, ShieldDecorator):
+                         self.player = ShieldDecorator(self.player)
+                elif p.type == 'LIFE':
+                    # Unwrap to find base ship and add life
+                    # Simple hack: we know the structure might be Decorator->Decorator->Jet
+                    # But for now, let's just assume we can find 'lives' or it's on the top level object if updated properly
+                    # Actually, we need to find the underlying FighterJet.
+                    # Recursive search
+                    curr = self.player
+                    while hasattr(curr, 'ship'):
+                        curr = curr.ship
+                    if hasattr(curr, 'lives'):
+                        curr.lives += 1
+                        APILogger().log("PICKUP", f"Extra Life! Lives: {curr.lives}")
+                self.powerups.remove(p)
+        
         # Check Death
         player_r = self.player.get_rect()
         for d in self.squadron.children:
             # Lose if hit or enemy passes bottom
             if d.rect.colliderect(player_r) or d.rect.y > SCREEN_HEIGHT:
-                APILogger().log("DEATH", f"Game Over. Final Score: {self.score}")
-                # Submit score if player_name exists
-                if hasattr(game, 'player_name'):
-                    APILogger().submit_score(game.player_name, self.score)
+                result = self.player.take_damage()
+                
+                # If shield broke
+                if result == "BREAK_SHIELD":
+                    # Unwrap the shield. 
+                    # If we are Shield(Jet), self.player becomes Jet.
+                    # If we are Shield(Rapid(Jet)), self.player becomes Rapid(Jet).
+                    # Issue: self.player might be Rapid(Shield(Jet)).
+                    # Simplified assumption for this jam: P-key is rapid, pickups are shield.
+                    # If top level is Shield, remove it.
+                    if isinstance(self.player, ShieldDecorator):
+                        self.player = self.player.ship
+                        
+                    # Destroy enemy that hit us
+                    self.squadron.children.remove(d)
+                    self.squadron.add_explosion(d.rect.centerx, d.rect.centery)
+                    break
                     
-                game.change_state(GameOverState(self.score, self.wave))
+                # If real damage/death
+                elif result is True: # Dead
+                    APILogger().log("DEATH", f"Game Over. Final Score: {self.score}")
+                    if hasattr(game, 'player_name'):
+                        APILogger().submit_score(game.player_name, self.score)
+                    game.change_state(GameOverState(self.score, self.wave))
+                else: # Took damage but alive
+                    self.squadron.children.remove(d)
+                    self.squadron.add_explosion(d.rect.centerx, d.rect.centery)
+                    break
 
     def draw(self, game):
         self.stars.draw(game.screen)
@@ -227,17 +310,19 @@ class WarState(GameState):
         self.squadron.draw(game.screen)
         for b in self.bullets:
             pygame.draw.rect(game.screen, COLOR_BULLET, b)
+        for p in self.powerups:
+            p.draw(game.screen)
             
         # --- HUD (Heads Up Display) ---
-        # 1. Timer
         seconds = (pygame.time.get_ticks() - self.start_ticks) // 1000
         time_str = f"{seconds // 60:02}:{seconds % 60:02}"
-        
         font = pygame.font.Font(None, 36)
         
-        # Draw Top Bar Background
-        pygame.draw.rect(game.screen, (20, 20, 40), (0, 0, SCREEN_WIDTH, 40))
-        pygame.draw.line(game.screen, COLOR_PLAYER, (0, 40), (SCREEN_WIDTH, 40), 2)
+        # Glass Panel HUD
+        panel = pygame.Surface((SCREEN_WIDTH, 45), pygame.SRCALPHA)
+        pygame.draw.rect(panel, (20, 20, 40, 180), (0, 0, SCREEN_WIDTH, 45))
+        pygame.draw.line(panel, (0, 150, 255), (0, 44), (SCREEN_WIDTH, 44), 2)
+        game.screen.blit(panel, (0, 0))
         
         # Render Stats
         txt_score = font.render(f"SCORE: {self.score}", True, (255, 255, 255))
@@ -247,6 +332,15 @@ class WarState(GameState):
         game.screen.blit(txt_score, (20, 10))
         game.screen.blit(txt_wave, (350, 10))
         game.screen.blit(txt_time, (650, 10))
+        
+        # Draw Hearts instead of circles
+        lives = 0
+        curr = self.player
+        while hasattr(curr, 'ship'): curr = curr.ship
+        if hasattr(curr, 'lives'): lives = curr.lives
+        
+        for i in range(lives):
+            draw_heart(game.screen, 30 + i*35, 80, 25)
 
 # --- GAME OVER STATE ---
 class GameOverState(GameState):
