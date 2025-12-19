@@ -1,0 +1,870 @@
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+[2025-12-19 22:12:37] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:12:37] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:41] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:41] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:41] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:41] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:41] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:41] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:41] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:41] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:41] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:41] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:43] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:12:43] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:47] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:47] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:47] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:47] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:47] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:51] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:12:51] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:55] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:55] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:55] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:55] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:12:55] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:12:55] "POST /log HTTP/1.1" 200 -
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+[2025-12-19 22:15:18] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:15:18] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:15:22] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:15:22] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:15:22] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:15:22] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:15:22] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:15:22] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:15:22] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:15:22] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:15:22] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:15:22] "POST /log HTTP/1.1" 200 -
+ * Detected change in 'Y:\\ENICar\\cours\\5th Sem\\DesignPatterns\\DEFENDER-107\\game.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+ * Detected change in 'Y:\\ENICar\\cours\\5th Sem\\DesignPatterns\\DEFENDER-107\\game.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+[2025-12-19 22:17:24] [SYSTEM] Game Closed
+127.0.0.1 - - [19/Dec/2025 22:17:24] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:17:35] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:17:35] "POST /log HTTP/1.1" 200 -
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+[2025-12-19 22:21:05] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:21:05] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:21:05] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:21:05] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:21:13] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:21:13] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:21:23] [SYSTEM] Game Closed
+127.0.0.1 - - [19/Dec/2025 22:21:23] "POST /log HTTP/1.1" 200 -
+ * Detected change in 'Y:\\ENICar\\cours\\5th Sem\\DesignPatterns\\DEFENDER-107\\game.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+ * Detected change in 'Y:\\ENICar\\cours\\5th Sem\\DesignPatterns\\DEFENDER-107\\game.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+ * Detected change in 'Y:\\ENICar\\cours\\5th Sem\\DesignPatterns\\DEFENDER-107\\game.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+ * Detected change in 'Y:\\ENICar\\cours\\5th Sem\\DesignPatterns\\DEFENDER-107\\game.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+[2025-12-19 22:26:11] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:26:11] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:26:11] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:26:11] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:26:19] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:26:19] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:26:25] [SYSTEM] Game Closed
+127.0.0.1 - - [19/Dec/2025 22:26:25] "POST /log HTTP/1.1" 200 -
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+[2025-12-19 22:31:17] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:31:17] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:17] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:31:17] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:19] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:19] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:20] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:20] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:20] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:31:20] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:20] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:20] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:21] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:21] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:22] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:22] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:22] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:22] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:23] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:31:23] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:25] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:31:25] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:30] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:31:30] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:30] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:31:30] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:31] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:31] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:31] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:31] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:31] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:31:31] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:33] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:33] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:33] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:33] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:34] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:34] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:34] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:34] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:34] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:34] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:34] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:34] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:38] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:31:38] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:40] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:31:40] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:40] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:31:40] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:40] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:40] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:41] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:31:41] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:42] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:42] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:42] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:31:42] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:44] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:44] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:44] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:31:44] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:45] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:45] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:45] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:31:45] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:45] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:31:45] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:47] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:31:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:49] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:49] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:50] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:31:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:50] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:50] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:31:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:51] [STATE] Game Over - Enemy Hit Player!
+127.0.0.1 - - [19/Dec/2025 22:31:51] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:52] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:31:52] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:52] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:31:52] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:53] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:53] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:53] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:31:53] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:54] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:54] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:54] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:31:54] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:55] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:55] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:31:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:56] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:56] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:57] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:31:57] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:57] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:31:57] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:57] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:31:57] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:59] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:31:59] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:31:59] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:31:59] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:32:00] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:32:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:32:00] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:32:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:32:00] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:32:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:32:01] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:32:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:32:01] [STATE] Game Over - Enemy Hit Player!
+127.0.0.1 - - [19/Dec/2025 22:32:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:32:07] [SYSTEM] Game Closed
+127.0.0.1 - - [19/Dec/2025 22:32:07] "POST /log HTTP/1.1" 200 -
+ * Detected change in 'Y:\\ENICar\\cours\\5th Sem\\DesignPatterns\\DEFENDER-107\\game.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+[2025-12-19 22:33:35] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:33:35] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:35] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:33:35] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:36] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:36] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:37] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:33:37] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:37] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:37] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:38] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:38] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:39] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:33:39] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:39] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:39] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:39] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:33:39] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:40] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:40] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:40] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:33:40] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:40] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:33:40] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:42] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:33:42] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:42] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:42] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:43] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:33:43] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:43] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:43] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:44] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:44] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:44] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:33:44] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:45] [STATE] Game Over - Enemy Hit Player!
+127.0.0.1 - - [19/Dec/2025 22:33:45] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:46] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:33:46] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:46] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:33:46] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:47] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:48] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:33:48] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:48] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:48] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:49] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:33:49] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:49] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:49] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:50] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:50] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:33:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:52] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:52] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:52] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:33:52] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:52] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:33:52] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:53] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:33:53] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:53] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:53] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:54] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:33:54] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:54] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:54] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:54] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:33:54] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:55] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:55] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:33:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:56] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:33:56] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:33:56] [STATE] Game Over - Enemy Hit Player!
+127.0.0.1 - - [19/Dec/2025 22:33:56] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:01] [SYSTEM] Game Closed
+127.0.0.1 - - [19/Dec/2025 22:34:01] "POST /log HTTP/1.1" 200 -
+ * Detected change in 'Y:\\ENICar\\cours\\5th Sem\\DesignPatterns\\DEFENDER-107\\game.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+ * Detected change in 'Y:\\ENICar\\cours\\5th Sem\\DesignPatterns\\DEFENDER-107\\game.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+ * Detected change in 'Y:\\ENICar\\cours\\5th Sem\\DesignPatterns\\DEFENDER-107\\game.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 749-919-768
+[2025-12-19 22:34:43] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:34:43] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:43] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:34:43] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:44] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:44] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:44] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:34:44] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:45] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:45] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:45] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:34:45] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:46] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:46] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:46] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:46] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:47] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:34:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:47] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:48] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:34:48] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:48] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:34:48] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:49] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:34:49] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:49] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:49] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:50] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:34:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:50] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:51] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:51] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:51] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:34:51] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:51] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:51] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:51] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:34:51] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:52] [STATE] Game Over - Enemy Hit Player!
+127.0.0.1 - - [19/Dec/2025 22:34:52] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:55] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:34:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:55] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:34:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:55] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:56] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:34:56] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:56] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:56] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:56] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:56] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:57] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:57] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:57] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:34:57] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:57] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:57] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:57] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:57] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:57] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:34:57] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:57] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:57] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:58] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:58] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:58] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:58] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:58] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:58] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:58] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:34:58] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:58] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:34:58] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:59] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:34:59] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:59] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:59] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:34:59] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:34:59] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:00] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:00] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:00] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:00] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:00] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:00] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:00] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:01] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:01] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:01] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:01] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:01] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:01] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:01] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:35:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:01] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:02] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:02] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:02] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:02] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:02] [STATE] Game Over - Enemy Hit Player!
+127.0.0.1 - - [19/Dec/2025 22:35:02] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:04] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:35:04] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:04] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:35:04] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:04] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:04] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:04] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:04] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:04] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:04] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:05] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:05] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:05] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:05] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:05] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:05] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:05] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:05] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:05] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:05] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:05] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:05] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:05] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:35:05] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:05] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:35:05] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:06] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:35:06] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:07] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:07] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:07] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:07] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:07] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:07] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:07] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:07] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:08] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:08] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:08] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:08] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:08] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:08] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:08] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:08] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:08] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:08] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:09] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:09] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:09] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:09] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:09] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:09] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:09] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:09] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:09] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:09] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:09] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:09] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:10] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:10] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:10] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:35:10] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:12] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:35:12] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:12] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:35:12] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:13] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:13] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:13] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:13] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:13] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:13] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:13] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:13] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:13] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:13] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:14] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:14] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:14] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:14] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:14] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:14] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:14] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:14] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:14] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:14] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:15] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:15] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:16] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:16] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:16] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:35:16] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:16] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:35:16] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:17] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:35:17] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:18] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:18] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:18] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:18] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:18] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:18] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:18] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:18] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:18] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:18] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:19] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:19] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:19] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:19] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:19] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:19] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:19] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:19] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:19] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:19] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:19] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:19] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:20] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:20] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:20] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:35:20] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:20] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:20] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:21] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:35:21] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:22] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:35:22] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:22] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:35:22] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:23] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:23] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:23] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:23] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:23] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:23] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:24] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:24] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:24] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:24] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:24] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:24] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:24] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:24] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:24] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:24] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:24] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:24] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:24] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:24] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:25] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:25] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:25] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:25] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:27] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:27] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:27] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:35:27] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:27] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:35:27] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:28] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:35:28] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:28] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:28] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:28] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:28] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:29] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:29] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:29] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:29] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:29] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:29] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:29] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:29] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:29] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:29] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:30] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:30] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:30] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:30] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:30] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:30] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:30] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:30] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:30] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:30] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:30] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:35:30] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:32] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:35:32] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:33] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:35:33] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:33] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:35:33] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:34] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:34] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:34] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:34] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:34] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:34] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:34] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:34] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:34] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:34] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:34] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:34] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:35] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:35] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:35] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:35] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:35] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:35] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:35] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:35] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:35] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:35:35] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:35] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:35:35] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:36] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:35:36] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:36] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:36] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:37] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:37] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:37] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:37] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:37] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:37] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:37] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:37] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:37] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:37] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:37] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:37] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:38] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:38] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:38] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:38] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:38] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:38] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:38] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:38] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:38] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:38] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:38] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:35:38] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:38] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:38] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:39] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:39] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:39] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:39] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:39] [STATE] Game Over - Enemy Hit Player!
+127.0.0.1 - - [19/Dec/2025 22:35:39] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:41] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:35:41] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:41] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:35:41] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:41] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:41] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:42] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:42] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:42] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:42] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:42] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:42] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:42] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:42] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:42] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:42] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:42] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:42] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:43] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:43] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:43] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:43] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:44] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:44] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:45] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:45] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:45] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:35:45] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:45] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:35:45] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:46] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:35:46] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:46] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:46] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:46] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:46] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:47] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:47] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:47] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:47] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:47] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:47] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:47] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:48] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:48] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:48] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:48] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:48] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:48] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:48] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:35:48] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:48] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:48] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:48] [GAME] Enemy Destroyed (Score: 500)
+127.0.0.1 - - [19/Dec/2025 22:35:48] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:48] [STATE] Level 2 Victory!
+127.0.0.1 - - [19/Dec/2025 22:35:48] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:49] [GAME] Level 3 Started
+127.0.0.1 - - [19/Dec/2025 22:35:49] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:49] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:49] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:50] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:50] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:50] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:50] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:50] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:50] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:50] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:50] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:51] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:51] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:51] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:51] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:51] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:51] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:51] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:51] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:51] [STATE] Game Over - Enemy Hit Player!
+127.0.0.1 - - [19/Dec/2025 22:35:51] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:53] [GAME] Level 1 Started
+127.0.0.1 - - [19/Dec/2025 22:35:53] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:53] [STATE] Game Started
+127.0.0.1 - - [19/Dec/2025 22:35:53] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:53] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:53] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:54] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:54] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:54] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:54] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:54] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:54] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:54] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:54] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:54] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:54] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:55] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:55] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:55] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:35:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:55] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:55] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:35:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:55] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:55] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:56] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:56] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:56] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:56] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:57] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:57] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:58] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:35:58] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:58] [STATE] Level 1 Victory!
+127.0.0.1 - - [19/Dec/2025 22:35:58] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:58] [GAME] Level 2 Started
+127.0.0.1 - - [19/Dec/2025 22:35:58] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:59] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:59] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:59] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:59] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:59] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:59] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:59] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:59] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:59] [GAME] Enemy Destroyed (Score: 100)
+127.0.0.1 - - [19/Dec/2025 22:35:59] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:35:59] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:35:59] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:36:00] [GAME] Enemy Destroyed (Score: 200)
+127.0.0.1 - - [19/Dec/2025 22:36:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:36:00] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:36:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:36:00] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:36:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:36:00] [GAME] Enemy Destroyed (Score: 300)
+127.0.0.1 - - [19/Dec/2025 22:36:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:36:00] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:36:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:36:00] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:36:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:36:00] [GAME] Enemy Destroyed (Score: 400)
+127.0.0.1 - - [19/Dec/2025 22:36:00] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:36:01] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:36:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:36:01] [ACTION] Player shot a bullet
+127.0.0.1 - - [19/Dec/2025 22:36:01] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:36:02] [STATE] Game Over - Invasion
+127.0.0.1 - - [19/Dec/2025 22:36:02] "POST /log HTTP/1.1" 200 -
+[2025-12-19 22:36:06] [SYSTEM] Game Closed
+127.0.0.1 - - [19/Dec/2025 22:36:06] "POST /log HTTP/1.1" 200 -
