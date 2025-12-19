@@ -5,6 +5,16 @@ from abc import ABC, abstractmethod
 from settings import *
 from api_logger import APILogger
 
+# --- ASSETS ---
+try:
+    SHOOT_SOUND = pygame.mixer.Sound('shoot.wav')
+    EXPLOSION_SOUND = pygame.mixer.Sound('explosion.wav')
+    SHOOT_SOUND.set_volume(0.4)
+    EXPLOSION_SOUND.set_volume(0.5)
+except:
+    SHOOT_SOUND = None
+    EXPLOSION_SOUND = None
+
 # --- ABSTRACT BASE ---
 class GameEntity(ABC):
     @abstractmethod
@@ -60,6 +70,7 @@ class EnemySquadron(GameEntity):
 
     def add_explosion(self, x, y):
         self.particles.append(Particle(x, y))
+        if EXPLOSION_SOUND: EXPLOSION_SOUND.play()
 
     def update(self):
         for child in self.children:
@@ -97,6 +108,7 @@ class FighterJet(Ship):
         # Center cannon
         b = pygame.Rect(self.rect.centerx - 2, self.rect.top, 4, 15)
         bullets_list.append(b)
+        if SHOOT_SOUND: SHOOT_SOUND.play()
         APILogger().log("ACTION", "Cannon Fired")
 
     def draw(self, screen):

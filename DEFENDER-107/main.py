@@ -8,6 +8,11 @@ from api_logger import APILogger
 class WarGame:
     def __init__(self):
         pygame.init()
+        try:
+            pygame.mixer.init()
+        except:
+            print("Warning: Sound system failed to initialize.")
+            
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("API WARZONE: REST DEFENDER")
         self.clock = pygame.time.Clock()

@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from settings import *
 from entities import FighterJet, EnemySquadron, Drone, RapidFireDecorator
 from api_logger import APILogger
+import requests
+import json
 
 # --- COSMOS BACKGROUND GENERATOR ---
 class StarField:
@@ -44,12 +46,26 @@ class GameState(ABC):
 class MenuState(GameState):
     def __init__(self):
         self.stars = StarField()
+        self.top_scores = []
+        self.fetch_leaderboard()
+
+    def fetch_leaderboard(self):
+        # Fetch in a separate thread optionally, but for simplicity we'll try a quick timeout here
+        # or just do it blocking for a moment (it's a menu)
+        try:
+            r = requests.get("http://127.0.0.1:5000/leaderboard", timeout=1)
+            if r.status_code == 200:
+                self.top_scores = r.json()
+        except:
+            self.top_scores = []
 
     def handle_input(self, events, game):
         for e in events:
             if e.type == pygame.KEYDOWN and e.key == pygame.K_RETURN:
-                APILogger().log("STATE", "Endless Mission Started")
-                game.change_state(WarState())
+                # game.change_state(WarState()) -> Old way
+                game.change_state(NameInputState()) # New way
+            if e.type == pygame.KEYDOWN and e.key == pygame.K_r:
+                self.fetch_leaderboard()
 
     def update(self, game):
         self.stars.update()
@@ -72,6 +88,52 @@ class MenuState(GameState):
         # blinking effect
         if pygame.time.get_ticks() % 1000 < 500:
             game.screen.blit(msg, (SCREEN_WIDTH//2 - msg.get_width()//2, 400))
+            
+        # Draw Leaderboard
+        heading = f2.render("TOP PILOTS", True, (0, 255, 255))
+        game.screen.blit(heading, (50, 450))
+        
+        y_off = 500
+        font_sm = pygame.font.Font(None, 30)
+        for i, entry in enumerate(self.top_scores):
+            txt = f"{i+1}. {entry['username']} - {entry['score']}"
+            s = font_sm.render(txt, True, (200, 200, 200))
+            game.screen.blit(s, (50, y_off))
+            y_off += 30
+
+# --- NAME INPUT STATE ---
+class NameInputState(GameState):
+    def __init__(self):
+        self.stars = StarField()
+        self.name = ""
+
+    def handle_input(self, events, game):
+        for e in events:
+            if e.type == pygame.KEYDOWN:
+                if e.key == pygame.K_RETURN:
+                    if self.name.strip():
+                        game.player_name = self.name # Save to global game object
+                        APILogger().log("STATE", f"Mission Started by {self.name}")
+                        game.change_state(WarState())
+                elif e.key == pygame.K_BACKSPACE:
+                    self.name = self.name[:-1]
+                else:
+                    # Limit length
+                    if len(self.name) < 10 and e.unicode.isalnum():
+                        self.name += e.unicode
+
+    def update(self, game):
+        self.stars.update()
+
+    def draw(self, game):
+        self.stars.draw(game.screen)
+        
+        font = pygame.font.Font(None, 60)
+        t = font.render("ENTER PILOT NAME:", True, (255, 255, 0))
+        game.screen.blit(t, (SCREEN_WIDTH//2 - t.get_width()//2, 200))
+        
+        name_t = font.render(self.name + "_", True, (255, 255, 255))
+        game.screen.blit(name_t, (SCREEN_WIDTH//2 - name_t.get_width()//2, 300))
 
 # --- PLAYING STATE (ENDLESS) ---
 class WarState(GameState):
@@ -149,6 +211,10 @@ class WarState(GameState):
             # Lose if hit or enemy passes bottom
             if d.rect.colliderect(player_r) or d.rect.y > SCREEN_HEIGHT:
                 APILogger().log("DEATH", f"Game Over. Final Score: {self.score}")
+                # Submit score if player_name exists
+                if hasattr(game, 'player_name'):
+                    APILogger().submit_score(game.player_name, self.score)
+                    
                 game.change_state(GameOverState(self.score, self.wave))
 
     def draw(self, game):
