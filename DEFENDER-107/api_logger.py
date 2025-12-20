@@ -2,10 +2,13 @@
 import requests
 import threading
 
+# --- PATTERN: SINGLETON ---
+# Ensures only one APILogger instance exists.
+# All game events are routed through this single logging gateway.
 class APILogger:
     _instance = None
     _url = "https://designpatterns.onrender.com/log"
-    _api_key = "Defender-gamo-pwd-2025" # Hardcoded for now, or could load from a separate config file
+    _api_key = "Defender-gamo-pwd-2025" 
 
     def __new__(cls):
         if cls._instance is None:

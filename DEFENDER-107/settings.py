@@ -1,12 +1,12 @@
 # settings.py
 
 # Screen
-SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 900
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 FPS = 60
 
 # Network
-API_URL = "http://127.0.0.1:5000/log"
+API_URL = "https://designpatterns.onrender.com/log"
 
 # Cosmos Palette
 COLOR_BG = (5, 5, 10)             # Deep Space Black
@@ -19,4 +19,4 @@ COLOR_EXPLOSION = (255, 100, 0)
 
 # Game Settings (LOWER THESE NUMBERS)
 PLAYER_SPEED = 5        # Was 6
-ENEMY_BASE_SPEED = 1    # Was 2 (This makes enemies 50% slower!)
+ENEMY_BASE_SPEED = 0.5    # Was 2 (This makes enemies 50% slower!)

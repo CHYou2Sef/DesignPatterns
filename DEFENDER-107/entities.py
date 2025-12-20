@@ -1,6 +1,7 @@
 # entities.py
 import pygame
 import math
+import random
 from abc import ABC, abstractmethod
 from settings import *
 from api_logger import APILogger
@@ -62,7 +63,9 @@ class Particle(GameEntity):
             pygame.draw.circle(s, (*color, alpha), (self.radius, self.radius), self.radius)
             screen.blit(s, (self.x - self.radius, self.y - self.radius))
 
-# --- PATTERN: COMPOSITE (Enemy Drones) ---
+# --- PATTERN: COMPOSITE ---
+# The Drone is the 'Leaf', and EnemySquadron is the 'Composite'.
+# Both inherit from GameEntity to allow uniform treatment.
 class Drone(GameEntity):
     def __init__(self, x, y, speed_mod=0):
         self.rect = pygame.Rect(x, y, 40, 40)
@@ -99,6 +102,38 @@ class Drone(GameEntity):
         if random.random() > 0.3:
             pygame.draw.line(screen, (255, 0, 0, 100), (cx, cy), (cx, cy+40), 1)
 
+# --- NEW ENTITY: OBSTACLE (Asteroid) ---
+class Asteroid(GameEntity):
+    """
+    Static/Drifting obstacle. 
+    Does not target the player but drifts across the screen.
+    """
+    def __init__(self, x, y):
+        self.rect = pygame.Rect(x, y, 50, 50)
+        self.speed_x = random.uniform(-1, 1)
+        self.speed_y = random.uniform(1, 3)
+        self.rotation = 0
+        self.rot_speed = random.uniform(1, 5)
+
+    def update(self):
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
+        self.rotation += self.rot_speed
+
+    def draw(self, screen):
+        cx, cy = self.rect.center
+        # Draw a jagged rock shape using polygon
+        points = []
+        for i in range(8):
+            angle = math.radians(i * 45 + self.rotation)
+            r = 20 + random.randint(0, 5) # Jaggedness
+            dx = math.cos(angle) * r
+            dy = math.sin(angle) * r
+            points.append((cx + dx, cy + dy))
+        
+        pygame.draw.polygon(screen, (80, 70, 60), points) # Brown Rock
+        pygame.draw.polygon(screen, (120, 110, 100), points, 2) # Highlight
+
 class EnemySquadron(GameEntity):
     def __init__(self):
         self.children = []
@@ -106,10 +141,12 @@ class EnemySquadron(GameEntity):
 
     def add(self, entity):
         self.children.append(entity)
+        APILogger().log("ENTITY_CREATE", f"Spawned {entity.__class__.__name__}")
 
     def add_explosion(self, x, y):
         self.particles.append(Particle(x, y))
         if EXPLOSION_SOUND: EXPLOSION_SOUND.play()
+        APILogger().log("COLLISION", "Explosion triggered at location")
 
     def update(self):
         for child in self.children:
@@ -124,7 +161,10 @@ class EnemySquadron(GameEntity):
         for p in self.particles:
             p.draw(screen)
 
-# --- PATTERN: DECORATOR (The Player Jet) ---
+# --- PATTERN: DECORATOR ---
+# The Ship is the 'Component'.
+# RapidFireDecorator and ShieldDecorator are 'Concrete Decorators'.
+# This allows adding behaviors (Shields, Multi-shot) without modifying the FighterJet class.
 class Ship(ABC):
     @abstractmethod
     def shoot(self, bullets_list): pass
@@ -230,7 +270,7 @@ class ShieldDecorator(Ship):
 
     def take_damage(self):
         # Shield absorbs damage then breaks!
-        APILogger().log("DEFENSE", "Shield Absorbed Impact")
+        APILogger().log("DECORATOR_REMOVE", "ShieldDecorator removed from Ship")
         return "BREAK_SHIELD" # Special signal to Controller to unwrap
 
     def draw(self, screen):

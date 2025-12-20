@@ -2,7 +2,7 @@ import pygame
 import random
 from abc import ABC, abstractmethod
 from settings import *
-from entities import FighterJet, EnemySquadron, Drone, RapidFireDecorator, ShieldDecorator, PowerUp, draw_heart
+from entities import FighterJet, EnemySquadron, Drone, RapidFireDecorator, ShieldDecorator, PowerUp, draw_heart, Asteroid, draw_shield_emblem
 from api_logger import APILogger
 import requests
 import json
@@ -33,7 +33,10 @@ class StarField:
         for star in self.stars:
             pygame.draw.circle(screen, COLOR_STARS, (int(star[0]), int(star[1])), star[3])
 
-# --- STATE PATTERN BASE ---
+# --- PATTERN: STATE ---
+# GameState is the base 'State' interface. 
+# MenuState, WarState, etc., are 'Concrete States'.
+# Transitions are handled via game.change_state() in main.py.
 class GameState(ABC):
     @abstractmethod
     def handle_input(self, events, game): pass
@@ -47,6 +50,8 @@ class MenuState(GameState):
     def __init__(self):
         self.stars = StarField()
         self.top_scores = []
+        self.menu_items = ["START MISSION", "OPTIONS", "EXIT"]
+        self.selected_index = 0
         self.fetch_leaderboard()
 
     def fetch_leaderboard(self):
@@ -64,11 +69,23 @@ class MenuState(GameState):
 
     def handle_input(self, events, game):
         for e in events:
-            if e.type == pygame.KEYDOWN and e.key == pygame.K_RETURN:
-                # game.change_state(WarState()) -> Old way
-                game.change_state(NameInputState()) # New way
-            if e.type == pygame.KEYDOWN and e.key == pygame.K_r:
-                self.fetch_leaderboard()
+            if e.type == pygame.KEYDOWN:
+                if e.key == pygame.K_RETURN:
+                    # Execute selected menu item
+                    if self.selected_index == 0: # START
+                        game.change_state(NameInputState())
+                    elif self.selected_index == 1: # OPTIONS
+                        game.change_state(OptionsState(self))
+                    elif self.selected_index == 2: # EXIT
+                        pygame.event.post(pygame.event.Event(pygame.QUIT))
+                
+                if e.key == pygame.K_UP:
+                    self.selected_index = (self.selected_index - 1) % len(self.menu_items)
+                if e.key == pygame.K_DOWN:
+                    self.selected_index = (self.selected_index + 1) % len(self.menu_items)
+                
+                if e.key == pygame.K_r:
+                    self.fetch_leaderboard()
 
     def update(self, game):
         self.stars.update()
@@ -86,6 +103,8 @@ class MenuState(GameState):
 
         # Neon Title
         font = pygame.font.Font(None, 80)
+        f2 = pygame.font.Font(None, 40) # Smaller font for items
+        
         # Outer Glow
         t1_glow = font.render("GALACTIC DEFENDER", True, (0, 100, 255))
         t2_glow = font.render("ENDLESS WAR", True, (255, 0, 100))
@@ -98,11 +117,16 @@ class MenuState(GameState):
         game.screen.blit(t1, (SCREEN_WIDTH//2 - t1.get_width()//2, 150))
         game.screen.blit(t2, (SCREEN_WIDTH//2 - t2.get_width()//2, 220))
         
-        f2 = pygame.font.Font(None, 40)
-        msg = f2.render("[ PRESS ENTER TO LAUNCH ]", True, (255, 255, 255))
-        
         if pygame.time.get_ticks() % 1000 < 500:
-            game.screen.blit(msg, (SCREEN_WIDTH//2 - msg.get_width()//2, 400))
+            msg = f2.render("[ USE ARROWS TO NAVIGATE ]", True, (200, 200, 200))
+            game.screen.blit(msg, (SCREEN_WIDTH//2 - msg.get_width()//2, 380))
+            
+        # Draw Menu Selectors
+        for i, item in enumerate(self.menu_items):
+            color = (255, 255, 255) if i == self.selected_index else (100, 100, 100)
+            prefix = "> " if i == self.selected_index else "  "
+            txt = f2.render(prefix + item, True, color)
+            game.screen.blit(txt, (SCREEN_WIDTH//2 - txt.get_width()//2, 280 + i * 40))
             
         # --- Styled Leaderboard ---
         lb_panel = pygame.Surface((300, 350), pygame.SRCALPHA)
@@ -133,7 +157,7 @@ class NameInputState(GameState):
                 if e.key == pygame.K_RETURN:
                     if self.name.strip():
                         game.player_name = self.name # Save to global game object
-                        APILogger().log("STATE", f"Mission Started by {self.name}")
+                        APILogger().log("GAME_START", f"Mission Started by {self.name}")
                         game.change_state(WarState())
                 elif e.key == pygame.K_BACKSPACE:
                     self.name = self.name[:-1]
@@ -155,6 +179,78 @@ class NameInputState(GameState):
         name_t = font.render(self.name + "_", True, (255, 255, 255))
         game.screen.blit(name_t, (SCREEN_WIDTH//2 - name_t.get_width()//2, 300))
 
+# --- OPTIONS STATE ---
+class OptionsState(GameState):
+    """
+    State for changing settings.
+    Demonstrates the STATE pattern for auxiliary screens.
+    """
+    def __init__(self, return_state):
+        self.stars = StarField()
+        self.return_state = return_state
+        self.sound_on = pygame.mixer.get_init() is not None
+
+    def handle_input(self, events, game):
+        for e in events:
+            if e.type == pygame.KEYDOWN:
+                if e.key == pygame.K_ESCAPE or e.key == pygame.K_RETURN:
+                    game.change_state(self.return_state)
+                if e.key == pygame.K_s:
+                    # Toggle sound (simplified)
+                    if self.sound_on:
+                        pygame.mixer.quit()
+                        self.sound_on = False
+                    else:
+                        try:
+                            pygame.mixer.init()
+                            self.sound_on = True
+                        except: pass
+
+    def update(self, game): self.stars.update()
+
+    def draw(self, game):
+        self.stars.draw(game.screen)
+        f = pygame.font.Font(None, 60)
+        t = f.render("SETTINGS", True, (0, 255, 255))
+        game.screen.blit(t, (SCREEN_WIDTH//2 - t.get_width()//2, 150))
+        
+        f2 = pygame.font.Font(None, 40)
+        s_txt = "ON" if self.sound_on else "OFF"
+        st = f2.render(f"SOUND (Press S): {s_txt}", True, (255, 255, 255))
+        game.screen.blit(st, (SCREEN_WIDTH//2 - st.get_width()//2, 250))
+        
+        msg = f2.render("Press ESC to Return", True, (100, 100, 100))
+        game.screen.blit(msg, (SCREEN_WIDTH//2 - msg.get_width()//2, 450))
+
+# --- PAUSE STATE ---
+class PauseState(GameState):
+    """
+    MEMENTO-ish: Freezes the previous state and overlays UI.
+    Inherits previous state behavior without updating it.
+    """
+    def __init__(self, war_state):
+        self.previous_state = war_state
+
+    def handle_input(self, events, game):
+        for e in events:
+            if e.type == pygame.KEYDOWN and (e.key == pygame.K_ESCAPE or e.key == pygame.K_p):
+                game.change_state(self.previous_state)
+
+    def update(self, game): pass # Logic frozen
+
+    def draw(self, game):
+        # Draw background game state first
+        self.previous_state.draw(game)
+        
+        # Overlay darkening
+        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 150))
+        game.screen.blit(overlay, (0,0))
+        
+        font = pygame.font.Font(None, 100)
+        t = font.render("PAUSED", True, (255, 255, 255))
+        game.screen.blit(t, (SCREEN_WIDTH//2 - t.get_width()//2, SCREEN_HEIGHT//2 - 50))
+
 # --- PLAYING STATE (ENDLESS) ---
 class WarState(GameState):
     def __init__(self):
@@ -162,8 +258,10 @@ class WarState(GameState):
         self.squadron = EnemySquadron()
         self.player = FighterJet()
         self.bullets = []
-        self.powerups = [] # New: Powerups list
+        self.powerups = []
+        self.obstacles = [] # Asteroids
         self.decorated = False
+        self.player_moving = False
         
         # Scoreboard & Timer Stats
         self.start_ticks = pygame.time.get_ticks()
@@ -191,12 +289,21 @@ class WarState(GameState):
         if keys[pygame.K_p] and not self.decorated:
             self.player = RapidFireDecorator(self.player)
             self.decorated = True
+            APILogger().log("DECORATOR_APPLY", "RapidFireDecorator applied to Ship")
             
-        # --- MOUSE CONTROL ---
         mx, my = pygame.mouse.get_pos()
         # Only move if mouse is inside window horizontally
+        moving_now = False
         if 0 < mx < SCREEN_WIDTH:
             self.player.set_x(mx)
+            # Check if actually moved (roughly)
+            moving_now = True
+            
+        # Log character state change: Idle <-> Moving
+        if moving_now != self.player_moving:
+            self.player_moving = moving_now
+            state_label = "Moving" if moving_now else "Idle"
+            APILogger().log("CHARACTER_STATE", f"Pilot -> {state_label}")
         
         for e in events:
             # Quit anytime
@@ -205,6 +312,10 @@ class WarState(GameState):
 
             if e.type == pygame.KEYDOWN and e.key == pygame.K_SPACE:
                 self.player.shoot(self.bullets)
+            
+            # --- PAUSE TRIGGER ---
+            if e.type == pygame.KEYDOWN and (e.key == pygame.K_ESCAPE or e.key == pygame.K_p):
+                game.change_state(PauseState(self))
             
             # MOUSE SHOOT
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
@@ -227,19 +338,37 @@ class WarState(GameState):
                     if b in self.bullets: self.bullets.remove(b)
                     
                     self.score += 100 * self.wave
-                    APILogger().log("KILL", f"Enemy Down. Score: {self.score}")
+                    APILogger().log("ENTITY_DESTROY", f"Drone destroyed. Score: {self.score}")
+                    break
+            
+            # Asteroid Collision
+            for ast in self.obstacles[:]:
+                if b.colliderect(ast.rect):
+                    self.squadron.add_explosion(ast.rect.centerx, ast.rect.centery)
+                    self.obstacles.remove(ast)
+                    if b in self.bullets: self.bullets.remove(b)
+                    self.score += 50
                     break
 
         # --- ENDLESS MODE LOGIC ---
         # If all enemies dead, spawn next wave immediately
         if not self.squadron.children:
             self.wave += 1
+            if self.wave > 10:
+                # VICTORY!
+                APILogger().log("RESULT", "Victory Reached Wave 10+")
+                game.change_state(VictoryState(self.score))
+                return
             self.spawn_wave()
         
-        if not self.squadron.children:
-            self.wave += 1
-            self.spawn_wave()
-            
+        # --- OBSTACLE UPDATE ---
+        for ast in self.obstacles[:]:
+            ast.update()
+            if ast.rect.y > SCREEN_HEIGHT: self.obstacles.remove(ast)
+        
+        if random.randint(0, 1000) < 10: # Spawning obstacles
+             self.obstacles.append(Asteroid(random.randint(0, SCREEN_WIDTH), -50))
+
         # --- POWER UP SPAWNING ---
         if random.randint(0, 1000) < 5: # 0.5% chance per frame
             x = random.randint(50, SCREEN_WIDTH-50)
@@ -251,10 +380,12 @@ class WarState(GameState):
             if p.rect.y > SCREEN_HEIGHT: self.powerups.remove(p)
             # Collect
             if p.rect.colliderect(self.player.get_rect()):
+                APILogger().log("PICKUP", f"Collected {p.type} PowerUp")
                 if p.type == 'SHIELD':
                      # Wrap in Shield Decorator if not already shield
                      if not isinstance(self.player, ShieldDecorator):
                          self.player = ShieldDecorator(self.player)
+                         APILogger().log("DECORATOR_APPLY", "ShieldDecorator applied to Ship")
                 elif p.type == 'LIFE':
                     # Unwrap to find base ship and add life
                     # Simple hack: we know the structure might be Decorator->Decorator->Jet
@@ -269,8 +400,18 @@ class WarState(GameState):
                         APILogger().log("PICKUP", f"Extra Life! Lives: {curr.lives}")
                 self.powerups.remove(p)
         
-        # Check Death
+        # Check Death & Obstacles
         player_r = self.player.get_rect()
+        
+        # Test collision with Asteroids
+        for ast in self.obstacles[:]:
+            if ast.rect.colliderect(player_r):
+                self.obstacles.remove(ast)
+                self.squadron.add_explosion(ast.rect.centerx, ast.rect.centery)
+                if self.player.take_damage() is True:
+                     game.change_state(GameOverState(self.score, self.wave))
+                     return
+
         for d in self.squadron.children:
             # Lose if hit or enemy passes bottom
             if d.rect.colliderect(player_r) or d.rect.y > SCREEN_HEIGHT:
@@ -308,6 +449,7 @@ class WarState(GameState):
         
         self.player.draw(game.screen)
         self.squadron.draw(game.screen)
+        for ast in self.obstacles: ast.draw(game.screen)
         for b in self.bullets:
             pygame.draw.rect(game.screen, COLOR_BULLET, b)
         for p in self.powerups:
@@ -341,6 +483,39 @@ class WarState(GameState):
         
         for i in range(lives):
             draw_heart(game.screen, 30 + i*35, 80, 25)
+            
+        # --- ACTIVE POWER-UPS ICONS ---
+        # Show Shield/Rapid icons next to score if active
+        if isinstance(self.player, ShieldDecorator):
+            draw_shield_emblem(game.screen, 180, 25, 20)
+        if self.decorated: # Rapid Fire
+            pygame.draw.rect(game.screen, (255, 255, 0), (210, 15, 10, 20))
+
+# --- VICTORY STATE ---
+class VictoryState(GameState):
+    def __init__(self, score):
+        self.score = score
+        self.stars = StarField()
+
+    def handle_input(self, events, game):
+        for e in events:
+            if e.type == pygame.KEYDOWN and e.key == pygame.K_RETURN:
+                game.change_state(MenuState())
+
+    def update(self, game): self.stars.update()
+
+    def draw(self, game):
+        self.stars.draw(game.screen)
+        f = pygame.font.Font(None, 80)
+        t = f.render("MISSION ACCOMPLISHED", True, (0, 255, 0))
+        game.screen.blit(t, (SCREEN_WIDTH//2 - t.get_width()//2, 150))
+        
+        f2 = pygame.font.Font(None, 40)
+        st = f2.render(f"FINAL SCORE: {self.score}", True, (255, 255, 255))
+        game.screen.blit(st, (SCREEN_WIDTH//2 - st.get_width()//2, 250))
+        
+        msg = f2.render("The galaxy is safe... for now. Press ENTER", True, (200, 200, 200))
+        game.screen.blit(msg, (SCREEN_WIDTH//2 - msg.get_width()//2, 450))
 
 # --- GAME OVER STATE ---
 class GameOverState(GameState):

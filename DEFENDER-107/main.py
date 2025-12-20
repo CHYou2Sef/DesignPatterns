@@ -21,7 +21,14 @@ class WarGame:
         APILogger().log("SYSTEM", "War Engine Initialized")
 
     def change_state(self, new_state):
+        """
+        STATE PATTERN: Centralized state management.
+        Logs the transition between GameState objects.
+        """
+        old_name = self.state.__class__.__name__
+        new_name = new_state.__class__.__name__
         self.state = new_state
+        APILogger().log("STATE_TRANSITION", f"{old_name} -> {new_name}")
 
     def run(self):
         while True:
