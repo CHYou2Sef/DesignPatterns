@@ -5,6 +5,8 @@ from settings import *
 from states import MenuState
 from api_logger import APILogger
 
+import asyncio
+
 class WarGame:
     def __init__(self):
         pygame.init()
@@ -30,7 +32,7 @@ class WarGame:
         self.state = new_state
         APILogger().log("STATE_TRANSITION", f"{old_name} -> {new_name}")
 
-    def run(self):
+    async def run(self):
         while True:
             events = pygame.event.get()
             for e in events:
@@ -46,6 +48,11 @@ class WarGame:
 
             pygame.display.flip()
             self.clock.tick(FPS)
+            await asyncio.sleep(0) # Required for pygbag
+
+async def main():
+    game = WarGame()
+    await game.run()
 
 if __name__ == "__main__":
-    WarGame().run()
+    asyncio.run(main())

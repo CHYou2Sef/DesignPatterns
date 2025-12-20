@@ -71,6 +71,8 @@ SHIELD_EMBLEM_SURFACE = None
 DRONE_SURFACE = None
 JET_SURFACE = None
 JET_FLAME_SURFACE = None
+GLOW_SURFACES_LIFE = []
+GLOW_SURFACES_SHIELD = []
 
 def cache_particles():
     global PARTICLE_SURFACES
@@ -85,6 +87,8 @@ def cache_particles():
 
 def cache_glows():
     global GLOW_SURFACES_LIFE, GLOW_SURFACES_SHIELD
+    GLOW_SURFACES_LIFE = []
+    GLOW_SURFACES_SHIELD = []
     for i in range(10):
         size = int(30 + i * 2) 
         s_life = pygame.Surface((size*2, size*2), pygame.SRCALPHA)
