@@ -6,35 +6,166 @@ from abc import ABC, abstractmethod
 from settings import *
 from api_logger import APILogger
 
-# --- ASSETS ---
-try:
-    SHOOT_SOUND = pygame.mixer.Sound('shoot.wav')
-    EXPLOSION_SOUND = pygame.mixer.Sound('explosion.wav')
-    SHOOT_SOUND.set_volume(0.4)
-    EXPLOSION_SOUND.set_volume(0.5)
-except:
-    SHOOT_SOUND = None
-    EXPLOSION_SOUND = None
+# --- ASSETS & AUDIO MANAGER ---
+class AudioManager:
+    _instance = None
+    _sounds = {}
+    _music_on = True
+    _sound_on = True
 
-# --- VISUAL HELPERS ---
-def draw_heart(screen, x, y, size, color=(255, 50, 50)):
-    """Procedural Heart shape"""
-    # Drawing two circles and a triangle
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(AudioManager, cls).__new__(cls)
+            cls._instance._init_mixer()
+        return cls._instance
+
+    def _init_mixer(self):
+        try:
+            if not pygame.mixer.get_init():
+                pygame.mixer.init()
+        except:
+            print("Audio Mixer failed to initialize.")
+
+    def load_sounds(self):
+        """Lazy loading of sounds"""
+        sound_files = {
+            'shoot': 'shoot.wav',
+            'explosion': 'explosion.wav'
+        }
+        for name, file in sound_files.items():
+            try:
+                self._sounds[name] = pygame.mixer.Sound(file)
+                if name == 'shoot': self._sounds[name].set_volume(0.4)
+                if name == 'explosion': self._sounds[name].set_volume(0.5)
+            except:
+                self._sounds[name] = None
+                print(f"Warning: Could not load sound {file}")
+
+    def play_sound(self, name):
+        if self._sound_on and name in self._sounds and self._sounds[name]:
+            self._sounds[name].play()
+
+    def toggle_sound(self):
+        self._sound_on = not self._sound_on
+        return self._sound_on
+
+    def play_music(self, file, loop=-1):
+        if not self._music_on: return
+        try:
+            pygame.mixer.music.load(file)
+            pygame.mixer.music.play(loop)
+        except:
+            print(f"Warning: Could not play music {file}")
+
+    def stop_music(self):
+        pygame.mixer.music.stop()
+
+# Initialize global instance
+AUDIO = AudioManager()
+
+# --- OPTIMIZATION: SURFACE CACHE ---
+# Pre-render some common surfaces to avoid lag in draw() calls.
+PARTICLE_SURFACES = []
+HEART_SURFACE = None
+SHIELD_EMBLEM_SURFACE = None
+DRONE_SURFACE = None
+JET_SURFACE = None
+JET_FLAME_SURFACE = None
+
+def cache_particles():
+    global PARTICLE_SURFACES
+    PARTICLE_SURFACES = []
+    for i in range(1, 21): 
+        r = 10 + (20 - i)
+        s = pygame.Surface((r*2, r*2), pygame.SRCALPHA)
+        alpha = int((i / 20) * 255)
+        color = (255, int(i * 10), 0)
+        pygame.draw.circle(s, (*color, alpha), (r, r), r)
+        PARTICLE_SURFACES.append(s)
+
+def cache_glows():
+    global GLOW_SURFACES_LIFE, GLOW_SURFACES_SHIELD
+    for i in range(10):
+        size = int(30 + i * 2) 
+        s_life = pygame.Surface((size*2, size*2), pygame.SRCALPHA)
+        pygame.draw.circle(s_life, (0, 255, 0, 50), (size, size), size)
+        GLOW_SURFACES_LIFE.append(s_life)
+        s_shield = pygame.Surface((size*2, size*2), pygame.SRCALPHA)
+        pygame.draw.circle(s_shield, (0, 100, 255, 50), (size, size), size)
+        GLOW_SURFACES_SHIELD.append(s_shield)
+
+def cache_static_assets():
+    global HEART_SURFACE, SHIELD_EMBLEM_SURFACE, DRONE_SURFACE, JET_SURFACE, JET_FLAME_SURFACE
+    # Heart
+    HEART_SURFACE = pygame.Surface((40, 40), pygame.SRCALPHA)
+    draw_heart_procedural(HEART_SURFACE, 20, 15, 25)
+    
+    # Shield
+    SHIELD_EMBLEM_SURFACE = pygame.Surface((40, 40), pygame.SRCALPHA)
+    draw_shield_emblem_procedural(SHIELD_EMBLEM_SURFACE, 20, 20, 25)
+    
+    # Drone
+    DRONE_SURFACE = pygame.Surface((60, 60), pygame.SRCALPHA)
+    draw_drone_procedural(DRONE_SURFACE, 30, 30)
+    
+    # Jet
+    JET_SURFACE = pygame.Surface((60, 80), pygame.SRCALPHA)
+    draw_jet_procedural(JET_SURFACE, 30, 40)
+    
+    # Jet Flame
+    JET_FLAME_SURFACE = pygame.Surface((20, 40), pygame.SRCALPHA)
+    pygame.draw.polygon(JET_FLAME_SURFACE, (255, 150, 0), [(0, 0), (20, 0), (10, 30)])
+    pygame.draw.polygon(JET_FLAME_SURFACE, (255, 255, 0), [(5, 0), (15, 0), (10, 15)])
+
+def draw_heart_procedural(surf, x, y, size):
     r = size // 2
-    pygame.draw.circle(screen, color, (x - r//2, y), r//2)
-    pygame.draw.circle(screen, color, (x + r//2, y), r//2)
+    color = (255, 50, 50)
+    pygame.draw.circle(surf, color, (x - r//2, y), r//2)
+    pygame.draw.circle(surf, color, (x + r//2, y), r//2)
     points = [(x - r, y + r//4), (x + r, y + r//4), (x, y + r)]
-    pygame.draw.polygon(screen, color, points)
+    pygame.draw.polygon(surf, color, points)
 
-def draw_shield_emblem(screen, x, y, size, color=(50, 150, 255)):
-    """Procedural Shield shape"""
+def draw_shield_emblem_procedural(surf, x, y, size):
     w, h = size, size
+    color = (50, 150, 255)
     points = [
-        (x - w//2, y - h//2), (x + w//2, y - h//2),
-        (x + w//2, y), (x, y + h//2), (x - w//2, y)
+        (x - w//2, y - size//2), (x + w//2, y - size//2),
+        (x + w//2, y), (x, y + size//2), (x - w//2, y)
     ]
-    pygame.draw.polygon(screen, color, points)
-    pygame.draw.polygon(screen, (255, 255, 255), points, 2) # Border
+    pygame.draw.polygon(surf, color, points)
+    pygame.draw.polygon(surf, (255, 255, 255), points, 2)
+
+def draw_drone_procedural(surf, cx, cy):
+    # Outer wing frames
+    pygame.draw.line(surf, (100, 100, 100), (cx-25, cy-25), (cx+25, cy+25), 2)
+    pygame.draw.line(surf, (100, 100, 100), (cx+25, cy-25), (cx-25, cy+25), 2)
+    # Diamond body
+    points = [(cx, cy-22), (cx+22, cy), (cx, cy+22), (cx-22, cy)]
+    pygame.draw.polygon(surf, (30, 30, 30), points)
+    pygame.draw.polygon(surf, (80, 80, 80), points, 2)
+
+def draw_jet_procedural(surf, cx, cy):
+    # Wings
+    x, y = cx - 20, cy - 10
+    pygame.draw.polygon(surf, (100, 100, 120), [(x, y+30), (x+40, y+30), (x+20, y)])
+    pygame.draw.line(surf, (0, 255, 255), (x+5, y+30), (x+15, y+10), 2)
+    pygame.draw.line(surf, (0, 255, 255), (x+35, y+30), (x+25, y+10), 2)
+    # Fuselage
+    pygame.draw.polygon(surf, COLOR_PLAYER, [(x+14, y+50), (x+26, y+50), (x+20, y-15)])
+    # Cockpit
+    pygame.draw.ellipse(surf, (0, 200, 255), (x+17, y+10, 6, 15))
+
+# Global function to draw heart using cache
+def draw_heart(screen, x, y, size=None):
+    screen.blit(HEART_SURFACE, (x - 20, y - 15))
+
+def draw_shield_emblem(screen, x, y, size=None):
+    screen.blit(SHIELD_EMBLEM_SURFACE, (x - 20, y - 20))
+
+# Call caching
+cache_particles()
+cache_glows()
+cache_static_assets()
 
 # --- ABSTRACT BASE ---
 class GameEntity(ABC):
@@ -56,12 +187,10 @@ class Particle(GameEntity):
 
     def draw(self, screen):
         if self.life > 0:
-            alpha = int((self.life / 20) * 255)
-            # Dynamic Color: Yellow to Red
-            color = (255, int(self.life * 10), 0)
-            s = pygame.Surface((self.radius*2, self.radius*2), pygame.SRCALPHA)
-            pygame.draw.circle(s, (*color, alpha), (self.radius, self.radius), self.radius)
-            screen.blit(s, (self.x - self.radius, self.y - self.radius))
+            # Use pre-rendered surface based on life stage
+            idx = max(0, min(self.life - 1, 19))
+            surf = PARTICLE_SURFACES[idx]
+            screen.blit(surf, (self.x - surf.get_width()//2, self.y - surf.get_height()//2))
 
 # --- PATTERN: COMPOSITE ---
 # The Drone is the 'Leaf', and EnemySquadron is the 'Composite'.
@@ -78,28 +207,18 @@ class Drone(GameEntity):
         self.rect.x += math.sin(self.wobble) * 2 # Real movement logic
 
     def draw(self, screen):
-        # Pulsing Eye
+        # Draw body from cache
+        screen.blit(DRONE_SURFACE, (self.rect.x - 10, self.rect.y - 10))
+        
+        # Pulsing Red Eye (Static location on body, only color changes)
         pulse = abs(math.sin(pygame.time.get_ticks() * 0.005)) * 100
         eye_color = (155 + pulse, 0, 0)
-        
-        # Draw a "Drone" shape with detail
         cx, cy = self.rect.centerx, self.rect.centery
-        
-        # Outer wing frames
-        pygame.draw.line(screen, (100, 100, 100), (cx-25, cy-25), (cx+25, cy+25), 2)
-        pygame.draw.line(screen, (100, 100, 100), (cx+25, cy-25), (cx-25, cy+25), 2)
-        
-        # Diamond body
-        points = [(cx, cy-22), (cx+22, cy), (cx, cy+22), (cx-22, cy)]
-        pygame.draw.polygon(screen, (30, 30, 30), points) # Dark Body
-        pygame.draw.polygon(screen, (80, 80, 80), points, 2) # Light outline
-        
-        # Pulsing Red Eye
         pygame.draw.circle(screen, eye_color, (cx, cy), 10)
         pygame.draw.circle(screen, (255, 255, 255), (cx-3, cy-3), 3) # Highlight
         
-        # Laser sight (flickering)
-        if random.random() > 0.3:
+        # Laser sight (flickering) - optimized random
+        if pygame.time.get_ticks() % 100 > 30:
             pygame.draw.line(screen, (255, 0, 0, 100), (cx, cy), (cx, cy+40), 1)
 
 # --- NEW ENTITY: OBSTACLE (Asteroid) ---
@@ -114,6 +233,12 @@ class Asteroid(GameEntity):
         self.speed_y = random.uniform(1, 3)
         self.rotation = 0
         self.rot_speed = random.uniform(1, 5)
+        # GENERATE POINTS ONCE
+        self.points_relative = []
+        for i in range(8):
+            angle = math.radians(i * 45)
+            r = 20 + random.randint(0, 5)
+            self.points_relative.append((math.cos(angle) * r, math.sin(angle) * r))
 
     def update(self):
         self.rect.x += self.speed_x
@@ -122,17 +247,19 @@ class Asteroid(GameEntity):
 
     def draw(self, screen):
         cx, cy = self.rect.center
-        # Draw a jagged rock shape using polygon
-        points = []
-        for i in range(8):
-            angle = math.radians(i * 45 + self.rotation)
-            r = 20 + random.randint(0, 5) # Jaggedness
-            dx = math.cos(angle) * r
-            dy = math.sin(angle) * r
-            points.append((cx + dx, cy + dy))
+        # Rotate pre-generated points
+        rad = math.radians(self.rotation)
+        cos_a = math.cos(rad)
+        sin_a = math.sin(rad)
         
-        pygame.draw.polygon(screen, (80, 70, 60), points) # Brown Rock
-        pygame.draw.polygon(screen, (120, 110, 100), points, 2) # Highlight
+        rotated_points = []
+        for dx, dy in self.points_relative:
+            rx = dx * cos_a - dy * sin_a
+            ry = dx * sin_a + dy * cos_a
+            rotated_points.append((cx + rx, cy + ry))
+        
+        pygame.draw.polygon(screen, (80, 70, 60), rotated_points) # Brown Rock
+        pygame.draw.polygon(screen, (120, 110, 100), rotated_points, 2) # Highlight
 
 class EnemySquadron(GameEntity):
     def __init__(self):
@@ -145,7 +272,7 @@ class EnemySquadron(GameEntity):
 
     def add_explosion(self, x, y):
         self.particles.append(Particle(x, y))
-        if EXPLOSION_SOUND: EXPLOSION_SOUND.play()
+        AUDIO.play_sound('explosion')
         APILogger().log("COLLISION", "Explosion triggered at location")
 
     def update(self):
@@ -203,33 +330,23 @@ class FighterJet(Ship):
         # Center cannon
         b = pygame.Rect(self.rect.centerx - 2, self.rect.top, 4, 15)
         bullets_list.append(b)
-        if SHOOT_SOUND: SHOOT_SOUND.play()
+        AUDIO.play_sound('shoot')
         APILogger().log("ACTION", "Cannon Fired")
 
     def draw(self, screen):
-        # Draw a cool Fighter Jet shape with Glow
-        x, y = self.rect.x, self.rect.y
         cx, cy = self.rect.centerx, self.rect.centery
         
         # Engine Glow pulsing
         glow = abs(math.sin(pygame.time.get_ticks() * 0.01)) * 10
         pygame.draw.circle(screen, (0, 150, 255), (cx, cy + 20), 20 + glow, 1) # Hull Aura
         
-        # Wings
-        pygame.draw.polygon(screen, (100, 100, 120), [(x, y+30), (x+40, y+30), (x+20, y)])
-        # Wing detail
-        pygame.draw.line(screen, (0, 255, 255), (x+5, y+30), (x+15, y+10), 2)
-        pygame.draw.line(screen, (0, 255, 255), (x+35, y+30), (x+25, y+10), 2)
+        # Main Body from Cache
+        screen.blit(JET_SURFACE, (self.rect.x - 10, self.rect.y - 15))
         
-        # Fuselage
-        pygame.draw.polygon(screen, COLOR_PLAYER, [(x+14, y+50), (x+26, y+50), (x+20, y-15)])
-        # Cockpit
-        pygame.draw.ellipse(screen, (0, 200, 255), (x+17, y+10, 6, 15))
-        
-        # Engine Flame (Pulsing)
-        flame_h = 15 + random.randint(0, 10)
-        pygame.draw.polygon(screen, (255, 150, 0), [(x+18, y+50), (x+22, y+50), (x+20, y+50+flame_h)])
-        pygame.draw.polygon(screen, (255, 255, 0), [(x+19, y+50), (x+21, y+50), (x+20, y+50+flame_h//2)])
+        # Engine Flame from Cache (Dynamic Position)
+        flame_h = 15 + (pygame.time.get_ticks() % 10)
+        # Scale flame height? No, just blit it
+        screen.blit(JET_FLAME_SURFACE, (cx - 10, self.rect.bottom))
 
     def get_rect(self): return self.rect
 
@@ -288,14 +405,15 @@ class PowerUp(GameEntity):
         self.rect.y += 3 # Fall down
         
     def draw(self, screen):
-        # Glow Effect
-        glow_size = 35 + math.sin(pygame.time.get_ticks() * 0.01) * 5
-        glow_surf = pygame.Surface((int(glow_size*2), int(glow_size*2)), pygame.SRCALPHA)
-        color = (0, 255, 0, 50) if self.type == 'LIFE' else (0, 100, 255, 50)
-        pygame.draw.circle(glow_surf, color, (int(glow_size), int(glow_size)), int(glow_size))
-        screen.blit(glow_surf, (self.rect.centerx - int(glow_size), self.rect.centery - int(glow_size)))
-
+        # Glow Effect using pre-rendered surfaces
+        pulse_idx = int((math.sin(pygame.time.get_ticks() * 0.01) + 1) * 4.5) # 0 to 9 index
+        pulse_idx = max(0, min(pulse_idx, 9))
+        
         if self.type == 'LIFE':
+            surf = GLOW_SURFACES_LIFE[pulse_idx]
+            screen.blit(surf, (self.rect.centerx - surf.get_width()//2, self.rect.centery - surf.get_height()//2))
             draw_heart(screen, self.rect.centerx, self.rect.centery - 5, 20)
         else:
+            surf = GLOW_SURFACES_SHIELD[pulse_idx]
+            screen.blit(surf, (self.rect.centerx - surf.get_width()//2, self.rect.centery - surf.get_height()//2))
             draw_shield_emblem(screen, self.rect.centerx, self.rect.centery, 25)

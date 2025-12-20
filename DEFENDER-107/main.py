@@ -36,6 +36,7 @@ class WarGame:
             for e in events:
                 if e.type == pygame.QUIT:
                     APILogger().log("SYSTEM", "Engine Shutdown")
+                    APILogger().shutdown()
                     pygame.quit()
                     sys.exit()
 

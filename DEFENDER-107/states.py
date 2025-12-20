@@ -1,8 +1,9 @@
 import pygame
 import random
+import threading
 from abc import ABC, abstractmethod
 from settings import *
-from entities import FighterJet, EnemySquadron, Drone, RapidFireDecorator, ShieldDecorator, PowerUp, draw_heart, Asteroid, draw_shield_emblem
+from entities import FighterJet, EnemySquadron, Drone, RapidFireDecorator, ShieldDecorator, PowerUp, draw_heart, Asteroid, draw_shield_emblem, AUDIO
 from api_logger import APILogger
 import requests
 import json
@@ -19,6 +20,14 @@ class StarField:
                 random.uniform(0.5, 3.0), # Speed
                 random.randint(1, 3)      # Size
             ])
+        # Pre-render star sprites
+        self.star_sprites = {
+            1: pygame.Surface((1, 1)),
+            2: pygame.Surface((2, 2)),
+            3: pygame.Surface((3, 3))
+        }
+        for s in self.star_sprites.values():
+            s.fill(COLOR_STARS)
 
     def update(self):
         for star in self.stars:
@@ -29,9 +38,9 @@ class StarField:
                 star[0] = random.randint(0, SCREEN_WIDTH)
 
     def draw(self, screen):
-        screen.fill(COLOR_BG) # Clear screen with dark space color
+        screen.fill(COLOR_BG) 
         for star in self.stars:
-            pygame.draw.circle(screen, COLOR_STARS, (int(star[0]), int(star[1])), star[3])
+            screen.blit(self.star_sprites[star[3]], (int(star[0]), int(star[1])))
 
 # --- PATTERN: STATE ---
 # GameState is the base 'State' interface. 
@@ -45,6 +54,7 @@ class GameState(ABC):
     @abstractmethod
     def draw(self, game): pass
 
+
 # --- MENU STATE ---
 class MenuState(GameState):
     def __init__(self):
@@ -53,19 +63,27 @@ class MenuState(GameState):
         self.menu_items = ["START MISSION", "OPTIONS", "EXIT"]
         self.selected_index = 0
         self.fetch_leaderboard()
+        AUDIO.load_sounds()
+        AUDIO.play_music('music.mp3')
+        # Pre-render Cyber Grid
+        self.grid_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT + 50), pygame.SRCALPHA)
+        grid_color = (0, 50, 100)
+        for x in range(0, SCREEN_WIDTH, 50):
+            pygame.draw.line(self.grid_surf, grid_color, (x, 0), (x, SCREEN_HEIGHT + 50), 1)
+        for y in range(0, SCREEN_HEIGHT + 50, 50):
+            pygame.draw.line(self.grid_surf, grid_color, (0, y), (SCREEN_WIDTH, y), 1)
 
     def fetch_leaderboard(self):
-        # Fetch in a separate thread optionally, but for simplicity we'll try a quick timeout here
-        # or just do it blocking for a moment (it's a menu)
-        try:
-            # Re-use the URL from APILogger to avoid hardcoding it in two places
-            # APILogger()._url ends in /log, so we swap it for /leaderboard
-            lb_url = APILogger()._url.replace("/log", "/leaderboard")
-            r = requests.get(lb_url, timeout=1)
-            if r.status_code == 200:
-                self.top_scores = r.json()
-        except:
-            self.top_scores = []
+        def _fetch():
+            try:
+                lb_url = APILogger()._url.replace("/log", "/leaderboard")
+                r = requests.get(lb_url, timeout=2)
+                if r.status_code == 200:
+                    self.top_scores = r.json()
+            except:
+                pass
+        
+        threading.Thread(target=_fetch, daemon=True).start()
 
     def handle_input(self, events, game):
         for e in events:
@@ -93,13 +111,9 @@ class MenuState(GameState):
     def draw(self, game):
         self.stars.draw(game.screen)
         
-        # Cyber Grid Background
-        grid_color = (0, 50, 100)
+        # Cyber Grid Background from Cache
         time_offset = (pygame.time.get_ticks() // 20) % 50
-        for x in range(0, SCREEN_WIDTH, 50):
-            pygame.draw.line(game.screen, grid_color, (x, 0), (x, SCREEN_HEIGHT), 1)
-        for y in range(0, SCREEN_HEIGHT, 50):
-            pygame.draw.line(game.screen, grid_color, (0, y + time_offset), (SCREEN_WIDTH, y + time_offset), 1)
+        game.screen.blit(self.grid_surf, (0, time_offset - 50))
 
         # Neon Title
         font = pygame.font.Font(None, 80)
@@ -188,7 +202,7 @@ class OptionsState(GameState):
     def __init__(self, return_state):
         self.stars = StarField()
         self.return_state = return_state
-        self.sound_on = pygame.mixer.get_init() is not None
+        self.sound_on = AUDIO._sound_on
 
     def handle_input(self, events, game):
         for e in events:
@@ -196,15 +210,7 @@ class OptionsState(GameState):
                 if e.key == pygame.K_ESCAPE or e.key == pygame.K_RETURN:
                     game.change_state(self.return_state)
                 if e.key == pygame.K_s:
-                    # Toggle sound (simplified)
-                    if self.sound_on:
-                        pygame.mixer.quit()
-                        self.sound_on = False
-                    else:
-                        try:
-                            pygame.mixer.init()
-                            self.sound_on = True
-                        except: pass
+                    self.sound_on = AUDIO.toggle_sound()
 
     def update(self, game): self.stars.update()
 
@@ -230,11 +236,19 @@ class PauseState(GameState):
     """
     def __init__(self, war_state):
         self.previous_state = war_state
+        self.pause_start = pygame.time.get_ticks()
 
     def handle_input(self, events, game):
         for e in events:
-            if e.type == pygame.KEYDOWN and (e.key == pygame.K_ESCAPE or e.key == pygame.K_p):
-                game.change_state(self.previous_state)
+            if e.type == pygame.KEYDOWN:
+                if e.key == pygame.K_ESCAPE or e.key == pygame.K_p:
+                    # Calculate duration of this pause session and add it to state
+                    duration = pygame.time.get_ticks() - self.pause_start
+                    self.previous_state.paused_duration += duration
+                    game.change_state(self.previous_state)
+                
+                if e.key == pygame.K_m:
+                    game.change_state(MenuState())
 
     def update(self, game): pass # Logic frozen
 
@@ -244,12 +258,16 @@ class PauseState(GameState):
         
         # Overlay darkening
         overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 150))
+        overlay.fill((0, 0, 0, 180)) # Slightly darker
         game.screen.blit(overlay, (0,0))
         
         font = pygame.font.Font(None, 100)
         t = font.render("PAUSED", True, (255, 255, 255))
         game.screen.blit(t, (SCREEN_WIDTH//2 - t.get_width()//2, SCREEN_HEIGHT//2 - 50))
+        
+        f2 = pygame.font.Font(None, 40)
+        msg = f2.render("Press P to Resume | Press M for Menu", True, (200, 200, 200))
+        game.screen.blit(msg, (SCREEN_WIDTH//2 - msg.get_width()//2, SCREEN_HEIGHT//2 + 50))
 
 # --- PLAYING STATE (ENDLESS) ---
 class WarState(GameState):
@@ -265,11 +283,17 @@ class WarState(GameState):
         
         # Scoreboard & Timer Stats
         self.start_ticks = pygame.time.get_ticks()
+        self.paused_duration = 0
         self.score = 0
         self.wave = 1
         
         # Initial Wave
         self.spawn_wave()
+        
+        # Pre-render HUD Panel
+        self.hud_panel = pygame.Surface((SCREEN_WIDTH, 45), pygame.SRCALPHA)
+        pygame.draw.rect(self.hud_panel, (20, 20, 40, 180), (0, 0, SCREEN_WIDTH, 45))
+        pygame.draw.line(self.hud_panel, (0, 150, 255), (0, 44), (SCREEN_WIDTH, 44), 2)
 
     def spawn_wave(self):
         APILogger().log("GAME", f"Wave {self.wave} Spawning")
@@ -456,15 +480,19 @@ class WarState(GameState):
             p.draw(game.screen)
             
         # --- HUD (Heads Up Display) ---
-        seconds = (pygame.time.get_ticks() - self.start_ticks) // 1000
+        # If we are drawing from PauseState, we need to show the time frozen at pause_start
+        current_tick = pygame.time.get_ticks()
+        # Find if we are currently being drawn by a PauseState or if we are the active state
+        # A bit hacky but works for this architecture: check game.state
+        if game.state.__class__.__name__ == "PauseState" and hasattr(game.state, 'pause_start'):
+            current_tick = game.state.pause_start
+
+        seconds = (current_tick - self.start_ticks - self.paused_duration) // 1000
         time_str = f"{seconds // 60:02}:{seconds % 60:02}"
         font = pygame.font.Font(None, 36)
         
-        # Glass Panel HUD
-        panel = pygame.Surface((SCREEN_WIDTH, 45), pygame.SRCALPHA)
-        pygame.draw.rect(panel, (20, 20, 40, 180), (0, 0, SCREEN_WIDTH, 45))
-        pygame.draw.line(panel, (0, 150, 255), (0, 44), (SCREEN_WIDTH, 44), 2)
-        game.screen.blit(panel, (0, 0))
+        # Glass Panel HUD from Cache
+        game.screen.blit(self.hud_panel, (0, 0))
         
         # Render Stats
         txt_score = font.render(f"SCORE: {self.score}", True, (255, 255, 255))
