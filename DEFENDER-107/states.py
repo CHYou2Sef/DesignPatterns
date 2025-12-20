@@ -29,9 +29,10 @@ class StarField:
                 star[0] = random.randint(0, SCREEN_WIDTH)
 
     def draw(self, screen):
-        screen.fill(COLOR_BG) # Clear screen with dark space color
+        theme = get_theme_colors()
+        screen.fill(theme['BG']) # Clear screen with theme background
         for star in self.stars:
-            pygame.draw.circle(screen, COLOR_STARS, (int(star[0]), int(star[1])), star[3])
+            pygame.draw.circle(screen, theme['STARS'], (int(star[0]), int(star[1])), star[3])
 
 # --- STATE PATTERN BASE ---
 class GameState(ABC):
@@ -69,6 +70,9 @@ class MenuState(GameState):
                 game.change_state(NameInputState()) # New way
             if e.type == pygame.KEYDOWN and e.key == pygame.K_r:
                 self.fetch_leaderboard()
+            if e.type == pygame.KEYDOWN and e.key == pygame.K_t:
+                toggle_theme()
+                APILogger().log("SYSTEM", f"Theme changed to {CURRENT_THEME} MODE")
 
     def update(self, game):
         self.stars.update()
@@ -77,7 +81,8 @@ class MenuState(GameState):
         self.stars.draw(game.screen)
         
         # Cyber Grid Background
-        grid_color = (0, 50, 100)
+        theme = get_theme_colors()
+        grid_color = theme['GRID']
         time_offset = (pygame.time.get_ticks() // 20) % 50
         for x in range(0, SCREEN_WIDTH, 50):
             pygame.draw.line(game.screen, grid_color, (x, 0), (x, SCREEN_HEIGHT), 1)
@@ -104,10 +109,14 @@ class MenuState(GameState):
         if pygame.time.get_ticks() % 1000 < 500:
             game.screen.blit(msg, (SCREEN_WIDTH//2 - msg.get_width()//2, 400))
             
+        # --- Theme Indicator ---
+        theme_text = f2.render(f"[T] {CURRENT_THEME} MODE", True, (150, 150, 150))
+        game.screen.blit(theme_text, (SCREEN_WIDTH//2 - theme_text.get_width()//2, 500))
+            
         # --- Styled Leaderboard ---
         lb_panel = pygame.Surface((300, 350), pygame.SRCALPHA)
-        pygame.draw.rect(lb_panel, (0, 0, 50, 150), (0, 0, 300, 350), border_radius=15)
-        pygame.draw.rect(lb_panel, (0, 150, 255, 255), (0, 0, 300, 350), 2, border_radius=15)
+        pygame.draw.rect(lb_panel, theme['PANEL_BG'], (0, 0, 300, 350), border_radius=15)
+        pygame.draw.rect(lb_panel, (*theme['PANEL_BORDER'], 255), (0, 0, 300, 350), 2, border_radius=15)
         game.screen.blit(lb_panel, (40, 440))
 
         heading = f2.render("TOP PILOTS", True, (0, 255, 255))
@@ -170,10 +179,19 @@ class WarState(GameState):
         self.score = 0
         self.wave = 1
         
+        # Wave Notification System
+        self.wave_notification = None  # Text to display
+        self.wave_notification_timer = 0  # Duration to show notification
+        
         # Initial Wave
         self.spawn_wave()
 
     def spawn_wave(self):
+        # Show wave notification (except for wave 1)
+        if self.wave > 1:
+            self.wave_notification = f"WAVE {self.wave}"
+            self.wave_notification_timer = 120  # Show for 2 seconds (120 frames at 60 FPS)
+        
         APILogger().log("GAME", f"Wave {self.wave} Spawning")
         # Increase enemy count every wave
         count = 3 + int(self.wave * 1.5)
@@ -213,6 +231,12 @@ class WarState(GameState):
     def update(self, game):
         self.stars.update()
         self.squadron.update()
+        
+        # Update wave notification timer
+        if self.wave_notification_timer > 0:
+            self.wave_notification_timer -= 1
+            if self.wave_notification_timer == 0:
+                self.wave_notification = None
         
         # Bullets
         for b in self.bullets[:]:
@@ -319,9 +343,10 @@ class WarState(GameState):
         font = pygame.font.Font(None, 36)
         
         # Glass Panel HUD
+        theme = get_theme_colors()
         panel = pygame.Surface((SCREEN_WIDTH, 45), pygame.SRCALPHA)
-        pygame.draw.rect(panel, (20, 20, 40, 180), (0, 0, SCREEN_WIDTH, 45))
-        pygame.draw.line(panel, (0, 150, 255), (0, 44), (SCREEN_WIDTH, 44), 2)
+        pygame.draw.rect(panel, theme['PANEL_BG'], (0, 0, SCREEN_WIDTH, 45))
+        pygame.draw.line(panel, theme['PANEL_BORDER'], (0, 44), (SCREEN_WIDTH, 44), 2)
         game.screen.blit(panel, (0, 0))
         
         # Render Stats
@@ -341,6 +366,34 @@ class WarState(GameState):
         
         for i in range(lives):
             draw_heart(game.screen, 30 + i*35, 80, 25)
+        
+        # --- WAVE NOTIFICATION ---
+        if self.wave_notification and self.wave_notification_timer > 0:
+            # Calculate alpha for fade effect
+            if self.wave_notification_timer > 100:
+                alpha = min(255, (120 - self.wave_notification_timer) * 12)  # Fade in
+            elif self.wave_notification_timer < 20:
+                alpha = self.wave_notification_timer * 12  # Fade out
+            else:
+                alpha = 255  # Full opacity
+            
+            # Create notification surface
+            notif_font = pygame.font.Font(None, 100)
+            notif_text = notif_font.render(self.wave_notification, True, (255, 255, 0))
+            
+            # Create semi-transparent surface
+            notif_surface = pygame.Surface((notif_text.get_width() + 60, notif_text.get_height() + 40), pygame.SRCALPHA)
+            pygame.draw.rect(notif_surface, (0, 0, 0, min(200, alpha)), (0, 0, notif_surface.get_width(), notif_surface.get_height()), border_radius=20)
+            pygame.draw.rect(notif_surface, (255, 255, 0, alpha), (0, 0, notif_surface.get_width(), notif_surface.get_height()), 3, border_radius=20)
+            
+            # Blit text onto notification surface
+            notif_text.set_alpha(alpha)
+            notif_surface.blit(notif_text, (30, 20))
+            
+            # Center on screen
+            x_pos = SCREEN_WIDTH // 2 - notif_surface.get_width() // 2
+            y_pos = SCREEN_HEIGHT // 2 - notif_surface.get_height() // 2
+            game.screen.blit(notif_surface, (x_pos, y_pos))
 
 # --- GAME OVER STATE ---
 class GameOverState(GameState):

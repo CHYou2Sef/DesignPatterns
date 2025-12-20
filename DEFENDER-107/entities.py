@@ -1,4 +1,5 @@
 # entities.py
+import random
 import pygame
 import math
 from abc import ABC, abstractmethod
