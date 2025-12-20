@@ -1,6 +1,7 @@
 # entities.py
 import pygame
 import math
+import random
 from abc import ABC, abstractmethod
 from settings import *
 from api_logger import APILogger
