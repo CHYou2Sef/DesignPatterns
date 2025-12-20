@@ -11,36 +11,33 @@ import json
 # --- COSMOS BACKGROUND GENERATOR ---
 class StarField:
     def __init__(self):
-        self.stars = []
-        # Create 100 random stars: [x, y, speed, size]
-        for _ in range(100):
-            self.stars.append([
-                random.randint(0, SCREEN_WIDTH),
-                random.randint(0, SCREEN_HEIGHT),
-                random.uniform(0.5, 3.0), # Speed
-                random.randint(1, 3)      # Size
-            ])
-        # Pre-render star sprites
-        self.star_sprites = {
-            1: pygame.Surface((1, 1)),
-            2: pygame.Surface((2, 2)),
-            3: pygame.Surface((3, 3))
-        }
-        for s in self.star_sprites.values():
-            s.fill(COLOR_STARS)
+        # Pre-render two layers of stars for a parallax effect
+        self.layer1 = self._create_star_layer(SCREEN_WIDTH, SCREEN_HEIGHT, 50, 1)
+        self.layer2 = self._create_star_layer(SCREEN_WIDTH, SCREEN_HEIGHT, 30, 2)
+        self.y1 = 0
+        self.y2 = 0
+
+    def _create_star_layer(self, w, h, count, size):
+        surf = pygame.Surface((w, h), pygame.SRCALPHA)
+        for _ in range(count):
+            x = random.randint(0, w)
+            y = random.randint(0, h)
+            pygame.draw.rect(surf, (200, 200, 200), (x, y, size, size))
+        return surf
 
     def update(self):
-        for star in self.stars:
-            star[1] += star[2] # Move down (y + speed)
-            # Reset to top if it goes off screen
-            if star[1] > SCREEN_HEIGHT:
-                star[1] = 0
-                star[0] = random.randint(0, SCREEN_WIDTH)
+        # Scroll layers at different speeds
+        self.y1 = (self.y1 + 1) % SCREEN_HEIGHT
+        self.y2 = (self.y2 + 2) % SCREEN_HEIGHT
 
     def draw(self, screen):
         screen.fill(COLOR_BG) 
-        for star in self.stars:
-            screen.blit(self.star_sprites[star[3]], (int(star[0]), int(star[1])))
+        # Layer 1
+        screen.blit(self.layer1, (0, self.y1))
+        screen.blit(self.layer1, (0, self.y1 - SCREEN_HEIGHT))
+        # Layer 2
+        screen.blit(self.layer2, (0, self.y2))
+        screen.blit(self.layer2, (0, self.y2 - SCREEN_HEIGHT))
 
 # --- PATTERN: STATE ---
 # GameState is the base 'State' interface. 
@@ -62,6 +59,7 @@ class MenuState(GameState):
         self.top_scores = []
         self.menu_items = ["START MISSION", "OPTIONS", "EXIT"]
         self.selected_index = 0
+        self.server_online = False
         self.fetch_leaderboard()
         AUDIO.load_sounds()
         AUDIO.play_music('music.mp3')
@@ -76,12 +74,14 @@ class MenuState(GameState):
     def fetch_leaderboard(self):
         def _fetch():
             try:
-                lb_url = APILogger()._url.replace("/log", "/leaderboard")
-                r = requests.get(lb_url, timeout=2)
+                r = requests.get(LEADERBOARD_URL, timeout=5)
                 if r.status_code == 200:
                     self.top_scores = r.json()
+                    self.server_online = True
+                else:
+                    self.server_online = False
             except:
-                pass
+                self.server_online = False
         
         threading.Thread(target=_fetch, daemon=True).start()
 
@@ -151,6 +151,13 @@ class MenuState(GameState):
         heading = f2.render("TOP PILOTS", True, (0, 255, 255))
         game.screen.blit(heading, (60, 460))
         
+        # Display server status
+        font_sm = pygame.font.Font(None, 30)
+        status_color = (0, 255, 0) if self.server_online else (255, 50, 50)
+        status_text = "[ SERVER: ONLINE ]" if self.server_online else "[ SERVER: OFFLINE ]"
+        txt_status = font_sm.render(status_text, True, status_color)
+        game.screen.blit(txt_status, (60, 485))
+        
         y_off = 510
         font_sm = pygame.font.Font(None, 30)
         for i, entry in enumerate(self.top_scores):
@@ -169,10 +176,10 @@ class NameInputState(GameState):
         for e in events:
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_RETURN:
-                    if self.name.strip():
-                        game.player_name = self.name # Save to global game object
-                        APILogger().log("GAME_START", f"Mission Started by {self.name}")
-                        game.change_state(WarState())
+                    final_name = self.name.strip() if self.name.strip() else "PILOT_X"
+                    game.player_name = final_name
+                    APILogger().log("GAME_START", f"Mission Started by {final_name}")
+                    game.change_state(WarState())
                 elif e.key == pygame.K_BACKSPACE:
                     self.name = self.name[:-1]
                 else:
@@ -296,24 +303,23 @@ class WarState(GameState):
         pygame.draw.line(self.hud_panel, (0, 150, 255), (0, 44), (SCREEN_WIDTH, 44), 2)
 
     def spawn_wave(self):
+        #Enemy wave Loggs
         APILogger().log("GAME", f"Wave {self.wave} Spawning")
         # Increase enemy count every wave
         count = 3 + int(self.wave * 1.5)
         speed_boost = min(3.0, self.wave * 0.2) # Cap speed so it's not impossible
         
+        #Spawn enemies
         for i in range(count):
             x = random.randint(50, SCREEN_WIDTH - 50)
             y = random.randint(-200, -50) # Spawn above screen
             self.squadron.add(Drone(x, y, speed_mod=speed_boost))
 
+    #Input handling
     def handle_input(self, events, game):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]: self.player.move(-PLAYER_SPEED)
         if keys[pygame.K_RIGHT]: self.player.move(PLAYER_SPEED)
-        if keys[pygame.K_p] and not self.decorated:
-            self.player = RapidFireDecorator(self.player)
-            self.decorated = True
-            APILogger().log("DECORATOR_APPLY", "RapidFireDecorator applied to Ship")
             
         mx, my = pygame.mouse.get_pos()
         # Only move if mouse is inside window horizontally
@@ -348,23 +354,28 @@ class WarState(GameState):
     def update(self, game):
         self.stars.update()
         self.squadron.update()
-        
-        # Bullets
+        self._update_projectiles()
+        self._handle_spawn_logic(game)
+        self._handle_powerups()
+        self._handle_collisions(game)
+
+    def _update_projectiles(self):
         for b in self.bullets[:]:
             b.y -= 10
-            if b.y < 0: self.bullets.remove(b)
+            if b.y < 0: 
+                self.bullets.remove(b)
+                continue
             
-            # Collision
+            # Drone Collision
             for drone in self.squadron.children[:]:
                 if b.colliderect(drone.rect):
                     self.squadron.add_explosion(drone.rect.centerx, drone.rect.centery)
                     self.squadron.children.remove(drone)
                     if b in self.bullets: self.bullets.remove(b)
-                    
                     self.score += 100 * self.wave
                     APILogger().log("ENTITY_DESTROY", f"Drone destroyed. Score: {self.score}")
-                    break
-            
+                    return # Bullet gone
+
             # Asteroid Collision
             for ast in self.obstacles[:]:
                 if b.colliderect(ast.rect):
@@ -372,108 +383,96 @@ class WarState(GameState):
                     self.obstacles.remove(ast)
                     if b in self.bullets: self.bullets.remove(b)
                     self.score += 50
-                    break
+                    return
 
-        # --- ENDLESS MODE LOGIC ---
-        # If all enemies dead, spawn next wave immediately
+    def _handle_spawn_logic(self, game):
+        # Wave complete?
         if not self.squadron.children:
             self.wave += 1
             if self.wave > 10:
-                # VICTORY!
                 APILogger().log("RESULT", "Victory Reached Wave 10+")
+                if hasattr(game, 'player_name'):
+                    APILogger().submit_score(game.player_name, self.score)
                 game.change_state(VictoryState(self.score))
                 return
             self.spawn_wave()
         
-        # --- OBSTACLE UPDATE ---
+        # Obstacles
         for ast in self.obstacles[:]:
             ast.update()
             if ast.rect.y > SCREEN_HEIGHT: self.obstacles.remove(ast)
         
-        if random.randint(0, 1000) < 10: # Spawning obstacles
+        if random.randint(0, 1000) < 10:
              self.obstacles.append(Asteroid(random.randint(0, SCREEN_WIDTH), -50))
 
-        # --- POWER UP SPAWNING ---
-        if random.randint(0, 1000) < 5: # 0.5% chance per frame
+        # PowerUp spawning
+        if random.randint(0, 1000) < 8:
             x = random.randint(50, SCREEN_WIDTH-50)
-            p_type = 'SHIELD' if random.random() < 0.5 else 'LIFE'
+            roll = random.random()
+            p_type = 'SHIELD' if roll < 0.4 else 'LIFE' if roll < 0.7 else 'RAPID'
             self.powerups.append(PowerUp(x, -50, p_type))
-            
+
+    def _handle_powerups(self):
         for p in self.powerups[:]:
             p.update()
-            if p.rect.y > SCREEN_HEIGHT: self.powerups.remove(p)
-            # Collect
+            if p.rect.y > SCREEN_HEIGHT: 
+                self.powerups.remove(p)
+                continue
+
             if p.rect.colliderect(self.player.get_rect()):
                 APILogger().log("PICKUP", f"Collected {p.type} PowerUp")
                 if p.type == 'SHIELD':
-                     # Wrap in Shield Decorator if not already shield
-                     if not isinstance(self.player, ShieldDecorator):
-                         self.player = ShieldDecorator(self.player)
-                         APILogger().log("DECORATOR_APPLY", "ShieldDecorator applied to Ship")
+                     if not self.player.has_decorator(ShieldDecorator):
+                          self.player = ShieldDecorator(self.player)
                 elif p.type == 'LIFE':
-                    # Unwrap to find base ship and add life
-                    # Simple hack: we know the structure might be Decorator->Decorator->Jet
-                    # But for now, let's just assume we can find 'lives' or it's on the top level object if updated properly
-                    # Actually, we need to find the underlying FighterJet.
-                    # Recursive search
-                    curr = self.player
-                    while hasattr(curr, 'ship'):
-                        curr = curr.ship
-                    if hasattr(curr, 'lives'):
-                        curr.lives += 1
-                        APILogger().log("PICKUP", f"Extra Life! Lives: {curr.lives}")
+                    self.player.get_base_ship().lives += 1
+                elif p.type == 'RAPID':
+                    if not self.player.has_decorator(RapidFireDecorator):
+                         self.player = RapidFireDecorator(self.player)
+                         self.decorated = True
                 self.powerups.remove(p)
-        
-        # Check Death & Obstacles
+
+    def _handle_collisions(self, game):
         player_r = self.player.get_rect()
         
-        # Test collision with Asteroids
+        # Asteroids
         for ast in self.obstacles[:]:
             if ast.rect.colliderect(player_r):
                 self.obstacles.remove(ast)
                 self.squadron.add_explosion(ast.rect.centerx, ast.rect.centery)
                 if self.player.take_damage() is True:
-                     game.change_state(GameOverState(self.score, self.wave))
+                     self._trigger_game_over(game)
                      return
 
-        for d in self.squadron.children:
-            # Lose if hit or enemy passes bottom
+        # Drones
+        for d in self.squadron.children[:]:
             if d.rect.colliderect(player_r) or d.rect.y > SCREEN_HEIGHT:
                 result = self.player.take_damage()
                 
-                # If shield broke
                 if result == "BREAK_SHIELD":
-                    # Unwrap the shield. 
-                    # If we are Shield(Jet), self.player becomes Jet.
-                    # If we are Shield(Rapid(Jet)), self.player becomes Rapid(Jet).
-                    # Issue: self.player might be Rapid(Shield(Jet)).
-                    # Simplified assumption for this jam: P-key is rapid, pickups are shield.
-                    # If top level is Shield, remove it.
-                    if isinstance(self.player, ShieldDecorator):
-                        self.player = self.player.ship
-                        
-                    # Destroy enemy that hit us
+                    self.player = self.player.remove_decorator(ShieldDecorator)
                     self.squadron.children.remove(d)
                     self.squadron.add_explosion(d.rect.centerx, d.rect.centery)
-                    break
-                    
-                # If real damage/death
-                elif result is True: # Dead
-                    APILogger().log("DEATH", f"Game Over. Final Score: {self.score}")
-                    if hasattr(game, 'player_name'):
-                        APILogger().submit_score(game.player_name, self.score)
-                    game.change_state(GameOverState(self.score, self.wave))
-                else: # Took damage but alive
+                elif result is True: # Death
+                    self._trigger_game_over(game)
+                    return
+                else: # Tanked it (or just damage)
                     self.squadron.children.remove(d)
                     self.squadron.add_explosion(d.rect.centerx, d.rect.centery)
-                    break
+
+    def _trigger_game_over(self, game):
+        APILogger().log("DEATH", f"Game Over. Final Score: {self.score}")
+        if hasattr(game, 'player_name'):
+            APILogger().submit_score(game.player_name, self.score)
+        game.change_state(GameOverState(self.score, self.wave))
 
     def draw(self, game):
         self.stars.draw(game.screen)
         
         self.player.draw(game.screen)
         self.squadron.draw(game.screen)
-        for ast in self.obstacles: ast.draw(game.screen)
+        for ast in self.obstacles: 
+            ast.draw(game.screen)
         for b in self.bullets:
             pygame.draw.rect(game.screen, COLOR_BULLET, b)
         for p in self.powerups:
@@ -495,26 +494,27 @@ class WarState(GameState):
         game.screen.blit(self.hud_panel, (0, 0))
         
         # Render Stats
+        pilot_name = getattr(game, 'player_name', "Unknown")
+        txt_pilot = font.render(f"PILOT: {pilot_name}", True, (0, 255, 255))
         txt_score = font.render(f"SCORE: {self.score}", True, (255, 255, 255))
         txt_wave = font.render(f"WAVE: {self.wave}", True, COLOR_HUD)
         txt_time = font.render(f"TIME: {time_str}", True, (255, 200, 0))
         
-        game.screen.blit(txt_score, (20, 10))
-        game.screen.blit(txt_wave, (350, 10))
-        game.screen.blit(txt_time, (650, 10))
+        game.screen.blit(txt_pilot, (15, 10))
+        game.screen.blit(txt_score, (250, 10))
+        game.screen.blit(txt_wave, (550, 10))
+        game.screen.blit(txt_time, (850, 10))
         
         # Draw Hearts instead of circles
-        lives = 0
-        curr = self.player
-        while hasattr(curr, 'ship'): curr = curr.ship
-        if hasattr(curr, 'lives'): lives = curr.lives
+        base = self.player.get_base_ship()
+        lives = base.lives
         
         for i in range(lives):
             draw_heart(game.screen, 30 + i*35, 80, 25)
             
         # --- ACTIVE POWER-UPS ICONS ---
         # Show Shield/Rapid icons next to score if active
-        if isinstance(self.player, ShieldDecorator):
+        if self.player.has_decorator(ShieldDecorator):
             draw_shield_emblem(game.screen, 180, 25, 20)
         if self.decorated: # Rapid Fire
             pygame.draw.rect(game.screen, (255, 255, 0), (210, 15, 10, 20))

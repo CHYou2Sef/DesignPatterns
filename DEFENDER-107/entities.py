@@ -66,13 +66,17 @@ AUDIO = AudioManager()
 # --- OPTIMIZATION: SURFACE CACHE ---
 # Pre-render some common surfaces to avoid lag in draw() calls.
 PARTICLE_SURFACES = []
-HEART_SURFACE = None
-SHIELD_EMBLEM_SURFACE = None
-DRONE_SURFACE = None
-JET_SURFACE = None
-JET_FLAME_SURFACE = None
-GLOW_SURFACES_LIFE = []
-GLOW_SURFACES_SHIELD = []
+# Dummy Fallback Surfaces to prevent NoneType errors in builds
+DUMMY_SURF = pygame.Surface((1,1), pygame.SRCALPHA)
+HEART_SURFACE = DUMMY_SURF
+SHIELD_EMBLEM_SURFACE = DUMMY_SURF
+DRONE_SURFACE = DUMMY_SURF
+JET_SURFACE = DUMMY_SURF
+JET_FLAME_SURFACE = DUMMY_SURF
+RAPID_SURFACE = DUMMY_SURF
+GLOW_SURFACES_LIFE = [DUMMY_SURF] * 10
+GLOW_SURFACES_SHIELD = [DUMMY_SURF] * 10
+GLOW_SURFACES_RAPID = [DUMMY_SURF] * 10
 
 def cache_particles():
     global PARTICLE_SURFACES
@@ -86,9 +90,10 @@ def cache_particles():
         PARTICLE_SURFACES.append(s)
 
 def cache_glows():
-    global GLOW_SURFACES_LIFE, GLOW_SURFACES_SHIELD
+    global GLOW_SURFACES_LIFE, GLOW_SURFACES_SHIELD, GLOW_SURFACES_RAPID
     GLOW_SURFACES_LIFE = []
     GLOW_SURFACES_SHIELD = []
+    GLOW_SURFACES_RAPID = []
     for i in range(10):
         size = int(30 + i * 2) 
         s_life = pygame.Surface((size*2, size*2), pygame.SRCALPHA)
@@ -97,9 +102,13 @@ def cache_glows():
         s_shield = pygame.Surface((size*2, size*2), pygame.SRCALPHA)
         pygame.draw.circle(s_shield, (0, 100, 255, 50), (size, size), size)
         GLOW_SURFACES_SHIELD.append(s_shield)
+        
+        s_rapid = pygame.Surface((size*2, size*2), pygame.SRCALPHA)
+        pygame.draw.circle(s_rapid, (255, 255, 0, 50), (size, size), size)
+        GLOW_SURFACES_RAPID.append(s_rapid)
 
 def cache_static_assets():
-    global HEART_SURFACE, SHIELD_EMBLEM_SURFACE, DRONE_SURFACE, JET_SURFACE, JET_FLAME_SURFACE
+    global HEART_SURFACE, SHIELD_EMBLEM_SURFACE, DRONE_SURFACE, JET_SURFACE, JET_FLAME_SURFACE, RAPID_SURFACE
     # Heart
     HEART_SURFACE = pygame.Surface((40, 40), pygame.SRCALPHA)
     draw_heart_procedural(HEART_SURFACE, 20, 15, 25)
@@ -120,6 +129,11 @@ def cache_static_assets():
     JET_FLAME_SURFACE = pygame.Surface((20, 40), pygame.SRCALPHA)
     pygame.draw.polygon(JET_FLAME_SURFACE, (255, 150, 0), [(0, 0), (20, 0), (10, 30)])
     pygame.draw.polygon(JET_FLAME_SURFACE, (255, 255, 0), [(5, 0), (15, 0), (10, 15)])
+    
+    # Rapid Fire Icon
+    RAPID_SURFACE = pygame.Surface((30, 30), pygame.SRCALPHA)
+    for i in range(-1, 2):
+        pygame.draw.rect(RAPID_SURFACE, (255, 255, 0), (15 + i*8 - 2, 10, 4, 10))
 
 def draw_heart_procedural(surf, x, y, size):
     r = size // 2
@@ -166,10 +180,15 @@ def draw_heart(screen, x, y, size=None):
 def draw_shield_emblem(screen, x, y, size=None):
     screen.blit(SHIELD_EMBLEM_SURFACE, (x - 20, y - 20))
 
-# Call caching
-cache_particles()
-cache_glows()
-cache_static_assets()
+def initialize_entities():
+    """
+    Consolidated initialization for all procedurally generated assets.
+    Call this AFTER pygame.init() and set_mode().
+    """
+    cache_particles()
+    cache_glows()
+    cache_static_assets()
+    AUDIO.load_sounds()
 
 # --- ABSTRACT BASE ---
 class GameEntity(ABC):
@@ -272,12 +291,13 @@ class EnemySquadron(GameEntity):
 
     def add(self, entity):
         self.children.append(entity)
-        APILogger().log("ENTITY_CREATE", f"Spawned {entity.__class__.__name__}")
+        # Reduce logging frequency
+        # APILogger().log("ENTITY_CREATE", f"Spawned {entity.__class__.__name__}")
 
     def add_explosion(self, x, y):
         self.particles.append(Particle(x, y))
         AUDIO.play_sound('explosion')
-        APILogger().log("COLLISION", "Explosion triggered at location")
+        # APILogger().log("COLLISION", "Explosion triggered at location")
 
     def update(self):
         for child in self.children:
@@ -308,7 +328,13 @@ class Ship(ABC):
     @abstractmethod
     def set_x(self, x): pass
     @abstractmethod
-    def take_damage(self): pass # Returns True if dead, False if survived
+    def take_damage(self): pass # Returns True if dead, False if survived, or "BREAK_SHIELD"
+    @abstractmethod
+    def get_base_ship(self): pass
+    @abstractmethod
+    def has_decorator(self, cls): pass
+    @abstractmethod
+    def remove_decorator(self, cls): pass
 
 
 class FighterJet(Ship):
@@ -325,6 +351,10 @@ class FighterJet(Ship):
         APILogger().log("DAMAGE", f"Hull Integrity Critical. Lives: {self.lives}")
         return self.lives <= 0
 
+    def get_base_ship(self): return self
+    def has_decorator(self, cls): return False
+    def remove_decorator(self, cls): return self
+
 
     def move(self, dx):
         self.rect.x += dx
@@ -335,7 +365,7 @@ class FighterJet(Ship):
         b = pygame.Rect(self.rect.centerx - 2, self.rect.top, 4, 15)
         bullets_list.append(b)
         AUDIO.play_sound('shoot')
-        APILogger().log("ACTION", "Cannon Fired")
+        # APILogger().log("ACTION", "Cannon Fired")
 
     def draw(self, screen):
         cx, cy = self.rect.centerx, self.rect.centery
@@ -363,6 +393,13 @@ class RapidFireDecorator(Ship):
     def set_x(self, x): self.ship.set_x(x)
     def take_damage(self): return self.ship.take_damage()
     def get_rect(self): return self.ship.get_rect()
+    def get_base_ship(self): return self.ship.get_base_ship()
+    def has_decorator(self, cls): 
+        return isinstance(self, cls) or self.ship.has_decorator(cls)
+    def remove_decorator(self, cls):
+        if isinstance(self, cls): return self.ship
+        self.ship = self.ship.remove_decorator(cls)
+        return self
 
     def shoot(self, bullets_list):
         self.ship.shoot(bullets_list) # Middle shot
@@ -393,6 +430,14 @@ class ShieldDecorator(Ship):
         # Shield absorbs damage then breaks!
         APILogger().log("DECORATOR_REMOVE", "ShieldDecorator removed from Ship")
         return "BREAK_SHIELD" # Special signal to Controller to unwrap
+    
+    def get_base_ship(self): return self.ship.get_base_ship()
+    def has_decorator(self, cls): 
+        return isinstance(self, cls) or self.ship.has_decorator(cls)
+    def remove_decorator(self, cls):
+        if isinstance(self, cls): return self.ship
+        self.ship = self.ship.remove_decorator(cls)
+        return self
 
     def draw(self, screen):
         self.ship.draw(screen)
@@ -414,10 +459,14 @@ class PowerUp(GameEntity):
         pulse_idx = max(0, min(pulse_idx, 9))
         
         if self.type == 'LIFE':
-            surf = GLOW_SURFACES_LIFE[pulse_idx]
+            surf = GLOW_SURFACES_LIFE[pulse_idx] if pulse_idx < len(GLOW_SURFACES_LIFE) else DUMMY_SURF
             screen.blit(surf, (self.rect.centerx - surf.get_width()//2, self.rect.centery - surf.get_height()//2))
-            draw_heart(screen, self.rect.centerx, self.rect.centery - 5, 20)
-        else:
-            surf = GLOW_SURFACES_SHIELD[pulse_idx]
+            if HEART_SURFACE: draw_heart(screen, self.rect.centerx, self.rect.centery - 5, 20)
+        elif self.type == 'RAPID':
+            surf = GLOW_SURFACES_RAPID[pulse_idx] if pulse_idx < len(GLOW_SURFACES_RAPID) else DUMMY_SURF
             screen.blit(surf, (self.rect.centerx - surf.get_width()//2, self.rect.centery - surf.get_height()//2))
-            draw_shield_emblem(screen, self.rect.centerx, self.rect.centery, 25)
+            if RAPID_SURFACE: screen.blit(RAPID_SURFACE, (self.rect.x, self.rect.y))
+        else: # SHIELD
+            surf = GLOW_SURFACES_SHIELD[pulse_idx] if pulse_idx < len(GLOW_SURFACES_SHIELD) else DUMMY_SURF
+            screen.blit(surf, (self.rect.centerx - surf.get_width()//2, self.rect.centery - surf.get_height()//2))
+            if SHIELD_EMBLEM_SURFACE: draw_shield_emblem(screen, self.rect.centerx, self.rect.centery, 25)

@@ -3,6 +3,7 @@ import pygame
 import sys
 from settings import *
 from states import MenuState
+from entities import initialize_entities
 from api_logger import APILogger
 
 import asyncio
@@ -18,6 +19,11 @@ class WarGame:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("API WARZONE: REST DEFENDER")
         self.clock = pygame.time.Clock()
+        self.player_name = "PILOT_X" # Default Name
+        
+        # Explicitly initialize procedurally generated assets
+        initialize_entities()
+        
         self.state = MenuState()
         
         APILogger().log("SYSTEM", "War Engine Initialized")

@@ -1,12 +1,13 @@
 # settings.py
 
 # Screen
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 900
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 FPS = 60
 
 # Network
-API_URL = "https://designpatterns.onrender.com/log"
+API_URL = "http://127.0.0.1:5000/log"
+LEADERBOARD_URL = "http://127.0.0.1:5000/leaderboard"
 
 # Cosmos Palette
 COLOR_BG = (5, 5, 10)             # Deep Space Black

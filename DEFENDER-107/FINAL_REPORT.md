@@ -16,18 +16,25 @@ useCaseDiagram
         useCase (Engage Combat) as UC2
         useCase (Collect Power-ups) as UC3
         useCase (Pause Game) as UC4
-        useCase (View Global Leaderboard) as UC5
-        useCase (Log Operational Data) as UC6
+        useCase (Configure Settings) as UC5
+        useCase (View Global Leaderboard) as UC6
+        useCase (Batch Log Events) as UC7
+        useCase (Submit High Score) as UC8
     }
 
     Pilot --> UC1
     Pilot --> UC2
     Pilot --> UC3
     Pilot --> UC4
-    UC1 ..> UC5 : <<includes>>
-    UC2 ..> UC6 : <<triggers>>
-    UC3 ..> UC6 : <<triggers>>
-    UC6 --> API
+    Pilot --> UC5
+    
+    UC1 ..> UC6 : <<includes>>
+    UC2 ..> UC7 : <<triggers>>
+    UC3 ..> UC7 : <<triggers>>
+    UC2 ..> UC8 : <<triggers on death>>
+    
+    UC7 --> API : Batch POST
+    UC8 --> API : Single POST
 ```
 
 ## 3. Class Diagram
@@ -35,95 +42,96 @@ This diagram highlights the implementation of the **State**, **Decorator**, and 
 
 ```mermaid
 classDiagram
-    class GameEntity {
-        <<abstract>>
-        +update()*
-        +draw(screen)*
+    %% --- STATE PATTERN ---
+    class WarGame {
+        -state: GameState
+        +change_state(s)
+        +run()
     }
-
-    class Ship {
-        <<abstract>>
-        +shoot(bullets)
-        +move(dx)
-        +take_damage()
-    }
-
-    class FighterJet {
-        +lives: int
-        +shoot()
-    }
-
-    class ShipDecorator {
-        <<abstract>>
-        -wrappedShip: Ship
-    }
-
-    class ShieldDecorator {
-        +take_damage()
-    }
-
-    class RapidFireDecorator {
-        +shoot()
-    }
-
-    class EnemySquadron {
-        -children: List~GameEntity~
-        +add(entity)
-        +update()
-    }
-
     class GameState {
         <<abstract>>
         +handle_input()
         +update()
         +draw()
     }
+    WarGame "1" *-- "1" GameState : Context/State relationship
+    GameState <|-- MenuState
+    GameState <|-- WarState
+    GameState <|-- PauseState
+    GameState <|-- VictoryState
+    GameState <|-- GameOverState
+    note for WarGame "STATE PATTERN: Central Context"
 
-    class WarState {
-        -player: Ship
-        -enemies: EnemySquadron
+    %% --- DECORATOR PATTERN ---
+    class Ship {
+        <<abstract>>
+        +shoot()
+        +take_damage()
+        +remove_decorator()
     }
-
-    GameEntity <|-- Drone
-    GameEntity <|-- Asteroid
-    GameEntity <|-- EnemySquadron
-    EnemySquadron o-- GameEntity : composite
-
+    class FighterJet {
+        +lives: int
+    }
+    class ShipDecorator {
+        <<abstract>>
+        -wrappedShip: Ship
+    }
     Ship <|-- FighterJet
     Ship <|-- ShipDecorator
     ShipDecorator <|-- ShieldDecorator
     ShipDecorator <|-- RapidFireDecorator
-    ShipDecorator o-- Ship : decorates
+    ShipDecorator "1" o-- "1" Ship : Recursive Wrapping
+    WarState "1" *-- "1" Ship : owns player
+    note for ShipDecorator "DECORATOR PATTERN: Dynamic Upgrades"
 
-    GameState <|-- MenuState
-    GameState <|-- WarState
-    GameState <|-- PauseState
-    WarState o-- Ship
-    WarState o-- EnemySquadron
-
-    class APILogger {
-        <<singleton>>
-        -instance
-        +log(level, msg)
-        +submit_score(user, score)
+    %% --- COMPOSITE PATTERN ---
+    class GameEntity {
+        <<abstract>>
+        +update()
+        +draw()
     }
+    class EnemySquadron {
+        -children: List~GameEntity~
+        +add(entity)
+    }
+    GameEntity <|-- Drone
+    GameEntity <|-- Asteroid
+    GameEntity <|-- EnemySquadron
+    EnemySquadron "1" *-- "*" GameEntity : Composition
+    WarState "1" *-- "1" EnemySquadron : manages swarm
+    note for EnemySquadron "COMPOSITE PATTERN: Hierarchy Management"
+
+    %% --- SINGLETON PATTERN ---
+    class APILogger {
+        +static _instance
+        +log(level, msg)
+        +submit_score()
+        -_flush_batch()
+    }
+    note for APILogger "SINGLETON PATTERN: Global Logging Gateway"
 ```
 
 ## 4. Design Pattern Analysis
 
-### 4.1 State Pattern
-Used to manage scenes. By encapsulating game logic into `MenuState`, `WarState`, and `PauseState`, we avoid complex "if-else" or "switch" structures in the main loop. This makes the game highly extensible for adding new modes (e.g., Level Selection).
+### 4.1 State Pattern (Behavioral)
+**Implementation**: The `WarGame` class acts as the **Context**, maintaining a reference to a `GameState` subclass. 
+**Logic**: Transitions between `MenuState`, `WarState`, `PauseState`, `VictoryState`, and `GameOverState` are handled via `change_state()`. This eliminates conditional branching (if/else) in the main game loop, providing a clean separation between different game phases and UI screens.
 
-### 4.2 Decorator Pattern
-Applied to the player's ship. Instead of creating subclasses like `ShieldedFighter` or `RapidFireFighter`, we wrap the base `FighterJet` at runtime. This allows for stacking effects (e.g., a shielded ship that also has rapid fire).
+### 4.2 Decorator Pattern (Structural)
+**Implementation**: The `Ship` interface is implemented by `FighterJet` (Concrete Component) and `ShipDecorator` (Base Decorator).
+**Logic**: Upgrades like `ShieldDecorator` and `RapidFireDecorator` wrap the ship at runtime to extend functionality without inheritance. Our implementation includes a **Recursive Unwrap** mechanism (`remove_decorator`), allowing for the robust removal of specific layers (like a broken shield) while preserving others.
 
-### 4.3 Composite Pattern
-Manages the swarm of enemies. The `EnemySquadron` acts as a composite that can hold both individual `Drones` and `Asteroids`. Calling `update()` on the squadron automatically propagates the call to all children.
+### 4.3 Composite Pattern (Structural)
+**Implementation**: `GameEntity` is the common interface. `Drone` and `Asteroid` are the **Leaf** nodes, while `EnemySquadron` is the **Composite**.
+**Logic**: The `EnemySquadron` manages a collection of entities. The client (WarState) treats a single Drone and a whole Squadron uniformly by calling `update()` or `draw()`, which the Composite then propagates to all its children.
 
-### 4.4 Singleton Pattern
-The `APILogger` ensures that regardless of where an event happens (UI, Physics, or Logic), all logs are sent through a single thread-safe gateway to the cloud server.
+### 4.4 Singleton Pattern (Creational)
+**Implementation**: The `APILogger` class restricts instantiation to a single static `_instance`.
+**Logic**: This pattern provides a global point of access for all logging and high-score operations. By centralizing all network calls through one instance, we achieved complex **Asynchronous Batching** without creating multiple competing network threads, ensuring optimized resource usage.
 
-## 5. Technical Merits
-- **Asynchronous Cloud Sync**: Uses Python `threading` to prevent network latency from affecting the 60FPS gameplay.
-- **RESTful Integration**: Communications are secured with an API Key and structured via JSON.
-- **Procedural Rendering**: No external sprite dependencies; all visuals are drawn using vector mathematics.
+## 5. Technical Merits & Improvements (V2.5)
+- **High-Performance Log Batching**: Reduces HTTP overhead by buffering events and sending them in consolidated POST requests. This ensures network stability during intense combat.
+- **Robust Decorator Architecture**: Implemented recursive `remove_decorator` logic to allow stripping specific upgrades (like shields) regardless of nesting order, solving a common bug in traditional decorator implementations.
+- **Memory-Efficient Rendering**: Pre-rendered parallax StarField and Glow surfaces eliminate procedural draw calls in the main loop, maintaining 60FPS on low-end hardware.
+- **Micro-Modular States**: Breakup of complex `update()` methods into distinct collision/power-up phases for high maintainability.
+- **Asynchronous Cloud Sync**: Uses Python `threading` with prioritised queues (Scores vs Logs) to prevent game stutter.

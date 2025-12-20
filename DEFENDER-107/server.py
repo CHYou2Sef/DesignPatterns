@@ -16,7 +16,7 @@ if app.config['SQLALCHEMY_DATABASE_URI'].startswith("postgres://"):
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Security: API Key
-API_KEY = os.environ.get('API_KEY', 'my-secret-dev-key') # Default for dev
+API_KEY = os.environ.get('API_KEY', 'Defender-gamo-pwd-2025') # Default for dev
 
 db = SQLAlchemy(app)
 
@@ -59,9 +59,22 @@ def check_api_key():
 
 # --- Routes ---
 
-@app.route('/')
-def home():
-    return "API Defender Server is Running!"
+@app.route('/log/batch', methods=['POST'])
+def log_batch():
+    if not check_api_key():
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    data = request.json # Should be a list of log objects
+    if not data or not isinstance(data, list):
+        return jsonify({"error": "Invalid data format"}), 400
+        
+    for item in data:
+        if 'level' in item and 'message' in item:
+            new_log = GameLog(level=item['level'], message=item['message'])
+            db.session.add(new_log)
+    
+    db.session.commit()
+    return jsonify({"status": f"batched {len(data)} logs"}), 201
 
 @app.route('/log', methods=['POST'])
 def log_event():

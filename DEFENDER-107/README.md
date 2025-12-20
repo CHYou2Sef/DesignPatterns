@@ -14,13 +14,13 @@ For the full technical analysis, diagrams, and pattern breakdowns, please refer 
 
 ---
 
-## 🔥 Key V2.4 Features
-- **Cloud-Synced Gameplay**: Every action is logged to a remote REST API in real-time.
-- **Dynamic Upgrades**: Runtime ship modifications using the **Decorator Pattern**.
-- **Interactive Menu**: Full keyboard navigation with Start, Options, and Exit logic.
+## 🔥 Key V2.5 Features
+- **Cloud-Synced Gameplay**: Every action is logged to local/remote REST APIs with **Asynchronous Log Batching** (V2.5).
+- **Extreme Performance**: Pre-rendered parallax StarField and static surface caching for ultra-smooth 60FPS.
+- **Robust Upgrades**: Enhanced **Decorator Pattern** with recursive unwrapping for stable power-up stacking.
+- **Interactive Menu**: Full keyboard navigation with Global Leaderboard rankings (fetched on demand).
 - **Advanced Physics**: Procedural Asteroid obstacles with rotation and drifting.
-- **Visual Polish**: Neon glows, pulsing engines, and glass-panel HUD.
-- **Global Leaderboard**: Cross-platform pilot rankings fetched from the cloud.
+- **Visual Polish**: Neon glows, pulsing engines, and glass-panel HUD with power-up indicators.
 
 ---
 
