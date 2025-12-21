@@ -156,13 +156,12 @@ def cache_static_assets():
     draw_shield_emblem_procedural(SHIELD_EMBLEM_SURFACE, 20, 20, 25)
     
     # Enemies (Images + Fallback)
-    DRONE_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: draw_drone_procedural(s, x, y), (60, 60))
-    HUNTER_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.polygon(s, (255, 50, 50), [(x, y-20), (x-20, y+20), (x+20, y+20)]), (40, 40))
-    HEAVY_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.rect(s, (150, 0, 200), (x-30, y-30, 60, 60)), (60, 60))
+    DRONE_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.circle(s, (100, 100, 100), (x, y), 25), (60, 60))
+    HUNTER_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.circle(s, (255, 50, 50), (x, y), 18), (40, 40))
+    HEAVY_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.circle(s, (150, 0, 200), (x, y), 28), (60, 60))
     
-    # Jet
-    JET_SURFACE = pygame.Surface((60, 80), pygame.SRCALPHA)
-    draw_jet_procedural(JET_SURFACE, 30, 40)
+    # Jet (Player Ship) - Now with image loading and rounded fallback
+    JET_SURFACE = load_image_fallback('img/player_ship.jpg', lambda s, x, y: draw_jet_procedural(s, x, y), (60, 80))
     
     # Jet Flame
     JET_FLAME_SURFACE = pygame.Surface((20, 40), pygame.SRCALPHA)
@@ -208,15 +207,19 @@ def draw_drone_procedural(surf, cx, cy):
     pygame.draw.polygon(surf, (80, 80, 80), points, 2)
 
 def draw_jet_procedural(surf, cx, cy):
-    # Wings
-    x, y = cx - 20, cy - 10
-    pygame.draw.polygon(surf, (100, 100, 120), [(x, y+30), (x+40, y+30), (x+20, y)])
-    pygame.draw.line(surf, (0, 255, 255), (x+5, y+30), (x+15, y+10), 2)
-    pygame.draw.line(surf, (0, 255, 255), (x+35, y+30), (x+25, y+10), 2)
-    # Fuselage
-    pygame.draw.polygon(surf, COLOR_PLAYER, [(x+14, y+50), (x+26, y+50), (x+20, y-15)])
-    # Cockpit
-    pygame.draw.ellipse(surf, (0, 200, 255), (x+17, y+10, 6, 15))
+    # Sleek, rounded ship design
+    # Wings (Rounded Elipses)
+    pygame.draw.ellipse(surf, (80, 80, 100), (cx - 28, cy - 5, 56, 25))
+    pygame.draw.ellipse(surf, (100, 100, 120), (cx - 25, cy - 5, 50, 20))
+    
+    # Fuselage (Rounded)
+    pygame.draw.ellipse(surf, COLOR_PLAYER, (cx - 12, cy - 25, 24, 65))
+    
+    # Cockpit (Glass)
+    pygame.draw.ellipse(surf, (0, 200, 255), (cx - 6, cy - 15, 12, 22))
+    
+    # Highlights
+    pygame.draw.ellipse(surf, (255, 255, 255, 100), (cx - 4, cy - 12, 4, 10))
 
 # Global function to draw heart using cache
 def draw_heart(screen, x, y, size=None):

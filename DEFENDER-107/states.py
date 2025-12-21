@@ -106,9 +106,6 @@ class MenuState(GameState):
                 if e.key == pygame.K_r:
                     self.fetch_leaderboard()
                 
-                if e.key == pygame.K_t:
-                    toggle_theme()
-                    APILogger().log("SYSTEM", f"Theme changed to {CURRENT_THEME} MODE")
 
     def update(self, game):
         self.stars.update()
@@ -150,9 +147,6 @@ class MenuState(GameState):
             txt = f2.render(prefix + item, True, color)
             game.screen.blit(txt, (SCREEN_WIDTH//2 - txt.get_width()//2, 280 + i * 40))
             
-        # --- Theme Indicator ---
-        theme_text = f2.render(f"[T] {CURRENT_THEME} MODE", True, (150, 150, 150))
-        game.screen.blit(theme_text, (SCREEN_WIDTH//2 - theme_text.get_width()//2, 500))
             
         # --- Styled Leaderboard ---
         lb_panel = pygame.Surface((300, 350), pygame.SRCALPHA)
@@ -230,6 +224,9 @@ class OptionsState(GameState):
                     game.change_state(self.return_state)
                 if e.key == pygame.K_s:
                     self.sound_on = AUDIO.toggle_sound()
+                if e.key == pygame.K_t:
+                    toggle_theme()
+                    APILogger().log("SYSTEM", f"Theme changed in OPTIONS to {CURRENT_THEME} MODE")
 
     def update(self, game): self.stars.update()
 
@@ -243,6 +240,9 @@ class OptionsState(GameState):
         s_txt = "ON" if self.sound_on else "OFF"
         st = f2.render(f"SOUND (Press S): {s_txt}", True, (255, 255, 255))
         game.screen.blit(st, (SCREEN_WIDTH//2 - st.get_width()//2, 250))
+        
+        tt = f2.render(f"THEME (Press T): {CURRENT_THEME}", True, (255, 255, 255))
+        game.screen.blit(tt, (SCREEN_WIDTH//2 - tt.get_width()//2, 300))
         
         msg = f2.render("Press ESC to Return", True, (100, 100, 100))
         game.screen.blit(msg, (SCREEN_WIDTH//2 - msg.get_width()//2, 450))
