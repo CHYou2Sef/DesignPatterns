@@ -18,6 +18,10 @@ COLOR_HUD = (0, 255, 0)           # Green Text
 COLOR_STARS = (255, 255, 255)     # White Stars
 COLOR_EXPLOSION = (255, 100, 0)
 
-# Game Settings (LOWER THESE NUMBERS)
-PLAYER_SPEED = 5        # Was 6
-ENEMY_BASE_SPEED = 0.5    # Was 2 (This makes enemies 50% slower!)
+# Game Settings
+PLAYER_SPEED = 5
+ENEMY_BASE_SPEED = 0.5
+HUNTER_SPEED = 1.2
+HEAVY_SPEED = 0.3
+MAX_HEALTH = 10
+POWERUP_DURATION = 10000  # 10 seconds in milliseconds

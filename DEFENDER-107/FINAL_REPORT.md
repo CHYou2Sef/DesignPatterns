@@ -95,6 +95,8 @@ classDiagram
         +add(entity)
     }
     GameEntity <|-- Drone
+    GameEntity <|-- Hunter
+    GameEntity <|-- Heavy
     GameEntity <|-- Asteroid
     GameEntity <|-- EnemySquadron
     EnemySquadron "1" *-- "*" GameEntity : Composition
@@ -129,9 +131,9 @@ classDiagram
 **Implementation**: The `APILogger` class restricts instantiation to a single static `_instance`.
 **Logic**: This pattern provides a global point of access for all logging and high-score operations. By centralizing all network calls through one instance, we achieved complex **Asynchronous Batching** without creating multiple competing network threads, ensuring optimized resource usage.
 
-## 5. Technical Merits & Improvements (V2.5)
-- **High-Performance Log Batching**: Reduces HTTP overhead by buffering events and sending them in consolidated POST requests. This ensures network stability during intense combat.
-- **Robust Decorator Architecture**: Implemented recursive `remove_decorator` logic to allow stripping specific upgrades (like shields) regardless of nesting order, solving a common bug in traditional decorator implementations.
-- **Memory-Efficient Rendering**: Pre-rendered parallax StarField and Glow surfaces eliminate procedural draw calls in the main loop, maintaining 60FPS on low-end hardware.
-- **Micro-Modular States**: Breakup of complex `update()` methods into distinct collision/power-up phases for high maintainability.
-- **Asynchronous Cloud Sync**: Uses Python `threading` with prioritised queues (Scores vs Logs) to prevent game stutter.
+## 5. Technical Merits & Improvements (V2.6)
+- **Advanced Composite Leaf Diversification**: Expanded the `EnemySquadron` hierarchy with `Hunter` and `Heavy` classes. This demonstrates specialized leaf behaviors such as targeting markers and multi-hit HP management while maintaining uniform treatment by the Composite.
+- **Time-Aware Decorator Logic**: Refactored the Decorator pattern to handle temporal state. Decorators now maintain internal timers and autonomously unwrap from the `Ship` component upon duration expiry, returning a signal to the `WarState` controller.
+- **Progression-Linked Gameplay Balance**: Integrated wave-locking mechanisms into spawning and power-up controllers. Specifically, the Triple Shot (Rapid Fire) upgrade is locked until Wave 3, ensuring a progressive difficulty curve.
+- **Defensive Asset Loading**: Implemented a `load_image_fallback` utility that uses `try/except` blocks to guarantee game stability even if image assets are missing, using procedural drawing as a robust safety net.
+- **Health Cap Implementation**: Enforced a strict 10-heart limit on player health to prevent infinite scaling and maintain game tension in later waves.

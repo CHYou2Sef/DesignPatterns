@@ -7,6 +7,28 @@ from settings import *
 from api_logger import APILogger
 
 # --- ASSETS & AUDIO MANAGER ---
+def load_image_fallback(path, fallback_func, size):
+    """Try to load an image, fallback to procedural drawing if it fails."""
+    try:
+        # Try loading
+        img = pygame.image.load(path).convert_alpha()
+        return pygame.transform.scale(img, size)
+    except Exception as e:
+        # If it fails, maybe try without "img/" prefix in case it's in root
+        alt_path = path.split('/')[-1]
+        try:
+            if alt_path != path:
+                img = pygame.image.load(alt_path).convert_alpha()
+                return pygame.transform.scale(img, size)
+        except: pass
+        
+        print(f"Warning: Could not load {path}. Using fallback. Error: {e}")
+        surf = pygame.Surface(size, pygame.SRCALPHA)
+        # Draw an opaque background for fallback to ensure visibility
+        # pygame.draw.rect(surf, (30, 30, 30, 100), (0, 0, size[0], size[1])) 
+        fallback_func(surf, size[0]//2, size[1]//2)
+        return surf
+
 class AudioManager:
     _instance = None
     _sounds = {}
@@ -71,9 +93,12 @@ DUMMY_SURF = pygame.Surface((1,1), pygame.SRCALPHA)
 HEART_SURFACE = DUMMY_SURF
 SHIELD_EMBLEM_SURFACE = DUMMY_SURF
 DRONE_SURFACE = DUMMY_SURF
+HUNTER_SURFACE = DUMMY_SURF
+HEAVY_SURFACE = DUMMY_SURF
 JET_SURFACE = DUMMY_SURF
 JET_FLAME_SURFACE = DUMMY_SURF
 RAPID_SURFACE = DUMMY_SURF
+SHIELD_AURA_SURF = DUMMY_SURF
 GLOW_SURFACES_LIFE = [DUMMY_SURF] * 10
 GLOW_SURFACES_SHIELD = [DUMMY_SURF] * 10
 GLOW_SURFACES_RAPID = [DUMMY_SURF] * 10
@@ -108,7 +133,7 @@ def cache_glows():
         GLOW_SURFACES_RAPID.append(s_rapid)
 
 def cache_static_assets():
-    global HEART_SURFACE, SHIELD_EMBLEM_SURFACE, DRONE_SURFACE, JET_SURFACE, JET_FLAME_SURFACE, RAPID_SURFACE
+    global HEART_SURFACE, SHIELD_EMBLEM_SURFACE, DRONE_SURFACE, HUNTER_SURFACE, HEAVY_SURFACE, JET_SURFACE, JET_FLAME_SURFACE, RAPID_SURFACE
     # Heart
     HEART_SURFACE = pygame.Surface((40, 40), pygame.SRCALPHA)
     draw_heart_procedural(HEART_SURFACE, 20, 15, 25)
@@ -117,9 +142,10 @@ def cache_static_assets():
     SHIELD_EMBLEM_SURFACE = pygame.Surface((40, 40), pygame.SRCALPHA)
     draw_shield_emblem_procedural(SHIELD_EMBLEM_SURFACE, 20, 20, 25)
     
-    # Drone
-    DRONE_SURFACE = pygame.Surface((60, 60), pygame.SRCALPHA)
-    draw_drone_procedural(DRONE_SURFACE, 30, 30)
+    # Enemies (Images + Fallback)
+    DRONE_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: draw_drone_procedural(s, x, y), (60, 60))
+    HUNTER_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.circle(s, (255, 100, 0), (x, y), 20), (40, 40))
+    HEAVY_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.rect(s, (100, 0, 150), (x-30, y-30, 60, 60)), (60, 60))
     
     # Jet
     JET_SURFACE = pygame.Surface((60, 80), pygame.SRCALPHA)
@@ -134,6 +160,12 @@ def cache_static_assets():
     RAPID_SURFACE = pygame.Surface((30, 30), pygame.SRCALPHA)
     for i in range(-1, 2):
         pygame.draw.rect(RAPID_SURFACE, (255, 255, 0), (15 + i*8 - 2, 10, 4, 10))
+    
+    # Shield Aura Surface
+    global SHIELD_AURA_SURF
+    SHIELD_AURA_SURF = pygame.Surface((120, 120), pygame.SRCALPHA)
+    pygame.draw.circle(SHIELD_AURA_SURF, (0, 255, 255, 80), (60, 60), 50)
+    pygame.draw.circle(SHIELD_AURA_SURF, (0, 255, 255, 255), (60, 60), 50, 2)
 
 def draw_heart_procedural(surf, x, y, size):
     r = size // 2
@@ -221,6 +253,7 @@ class Particle(GameEntity):
 class Drone(GameEntity):
     def __init__(self, x, y, speed_mod=0):
         self.rect = pygame.Rect(x, y, 40, 40)
+        self.hp = 1
         self.speed = ENEMY_BASE_SPEED + speed_mod
         self.wobble = float(x) # For sine wave movement
 
@@ -233,16 +266,49 @@ class Drone(GameEntity):
         # Draw body from cache
         screen.blit(DRONE_SURFACE, (self.rect.x - 10, self.rect.y - 10))
         
-        # Pulsing Red Eye (Static location on body, only color changes)
+        # Pulsing Red Eye
         pulse = abs(math.sin(pygame.time.get_ticks() * 0.005)) * 100
         eye_color = (155 + pulse, 0, 0)
         cx, cy = self.rect.centerx, self.rect.centery
         pygame.draw.circle(screen, eye_color, (cx, cy), 10)
         pygame.draw.circle(screen, (255, 255, 255), (cx-3, cy-3), 3) # Highlight
         
-        # Laser sight (flickering) - optimized random
+        # Laser sight (flickering)
         if pygame.time.get_ticks() % 100 > 30:
             pygame.draw.line(screen, (255, 0, 0, 100), (cx, cy), (cx, cy+40), 1)
+
+class Hunter(GameEntity):
+    def __init__(self, x, y, speed_mod=0):
+        self.rect = pygame.Rect(x, y, 40, 40)
+        self.hp = 1
+        self.speed = HUNTER_SPEED + speed_mod
+        self.wobble = float(x)
+
+    def update(self):
+        self.rect.y += self.speed
+        self.wobble += 0.15
+        self.rect.x += math.sin(self.wobble) * 4 # Faster wobble
+
+    def draw(self, screen):
+        screen.blit(HUNTER_SURFACE, (self.rect.x, self.rect.y))
+        # Marker: Red Triangle floating above
+        tx, ty = self.rect.centerx, self.rect.top - 10
+        pygame.draw.polygon(screen, (255, 0, 0), [(tx, ty), (tx-5, ty-10), (tx+5, ty-10)])
+
+class Heavy(GameEntity):
+    def __init__(self, x, y, speed_mod=0):
+        self.rect = pygame.Rect(x, y, 60, 60)
+        self.hp = 2 # 2 HP for Heavy
+        self.speed = HEAVY_SPEED + speed_mod
+
+    def update(self):
+        self.rect.y += self.speed
+
+    def draw(self, screen):
+        screen.blit(HEAVY_SURFACE, (self.rect.x, self.rect.y))
+        # HP Bar (small)
+        pygame.draw.rect(screen, (255, 0, 0), (self.rect.x, self.rect.y - 5, 60, 4))
+        pygame.draw.rect(screen, (0, 255, 0), (self.rect.x, self.rect.y - 5, 30 * self.hp, 4))
 
 # --- NEW ENTITY: OBSTACLE (Asteroid) ---
 class Asteroid(GameEntity):
@@ -318,6 +384,8 @@ class EnemySquadron(GameEntity):
 # This allows adding behaviors (Shields, Multi-shot) without modifying the FighterJet class.
 class Ship(ABC):
     @abstractmethod
+    def update(self): pass
+    @abstractmethod
     def shoot(self, bullets_list): pass
     @abstractmethod
     def draw(self, screen): pass
@@ -336,11 +404,13 @@ class Ship(ABC):
     @abstractmethod
     def remove_decorator(self, cls): pass
 
-
 class FighterJet(Ship):
     def __init__(self):
         self.rect = pygame.Rect(375, 500, 40, 50)
         self.lives = 3 # New: 3 Lives System
+
+    def update(self): 
+        return None # Fighters don't expire
 
     def set_x(self, x):
         self.rect.centerx = x
@@ -354,7 +424,6 @@ class FighterJet(Ship):
     def get_base_ship(self): return self
     def has_decorator(self, cls): return False
     def remove_decorator(self, cls): return self
-
 
     def move(self, dx):
         self.rect.x += dx
@@ -387,7 +456,21 @@ class FighterJet(Ship):
 class RapidFireDecorator(Ship):
     def __init__(self, wrapped_ship):
         self.ship = wrapped_ship
+        self.start_time = pygame.time.get_ticks()
+        self.duration = POWERUP_DURATION
         APILogger().log("UPGRADE", "Tactical Nuke/Rapid Fire Equipped")
+
+    def update(self):
+        # Propagate update and check for inner expiration
+        res = self.ship.update()
+        if res == "EXPIRED":
+             # Unwrap the expired inner decorator
+             # APILogger().log("DECORATOR_UNWRAP", f"Unwrapping {type(self.ship).__name__}")
+             self.ship = self.ship.remove_decorator(type(self.ship))
+        
+        if pygame.time.get_ticks() - self.start_time > self.duration:
+             return "EXPIRED"
+        return None
 
     def move(self, dx): self.ship.move(dx)
     def set_x(self, x): self.ship.set_x(x)
@@ -417,7 +500,19 @@ class RapidFireDecorator(Ship):
 class ShieldDecorator(Ship):
     def __init__(self, wrapped_ship):
         self.ship = wrapped_ship
+        self.start_time = pygame.time.get_ticks()
+        self.duration = POWERUP_DURATION
         APILogger().log("UPGRADE", "Energy Shield Activated")
+
+    def update(self):
+        # Propagate update and check for inner expiration
+        res = self.ship.update()
+        if res == "EXPIRED":
+             self.ship = self.ship.remove_decorator(type(self.ship))
+
+        if pygame.time.get_ticks() - self.start_time > self.duration:
+             return "EXPIRED"
+        return None
 
     def move(self, dx): self.ship.move(dx)
     def set_x(self, x): self.ship.set_x(x)
@@ -441,8 +536,14 @@ class ShieldDecorator(Ship):
 
     def draw(self, screen):
         self.ship.draw(screen)
-        # Draw Blue Bubble
-        pygame.draw.circle(screen, (0, 100, 255), self.ship.get_rect().center, 50, 2)
+        # Use cached shield aura for efficiency
+        # Pulsing effect
+        pulse = abs(math.sin(pygame.time.get_ticks() * 0.01)) * 20
+        # Scale? No, just draws at center
+        screen.blit(SHIELD_AURA_SURF, (self.ship.get_rect().centerx - 60, self.ship.get_rect().centery - 60))
+        # Extra glow
+        if pulse > 10:
+            pygame.draw.circle(screen, (0, 255, 255, 100), self.ship.get_rect().center, 52, 1)
 
 # --- STRATEGY/FACTORY: POWER UPS ---
 class PowerUp(GameEntity):
@@ -466,7 +567,8 @@ class PowerUp(GameEntity):
             surf = GLOW_SURFACES_RAPID[pulse_idx] if pulse_idx < len(GLOW_SURFACES_RAPID) else DUMMY_SURF
             screen.blit(surf, (self.rect.centerx - surf.get_width()//2, self.rect.centery - surf.get_height()//2))
             if RAPID_SURFACE: screen.blit(RAPID_SURFACE, (self.rect.x, self.rect.y))
-        else: # SHIELD
+        else: 
+            # SHIELD
             surf = GLOW_SURFACES_SHIELD[pulse_idx] if pulse_idx < len(GLOW_SURFACES_SHIELD) else DUMMY_SURF
             screen.blit(surf, (self.rect.centerx - surf.get_width()//2, self.rect.centery - surf.get_height()//2))
             if SHIELD_EMBLEM_SURFACE: draw_shield_emblem(screen, self.rect.centerx, self.rect.centery, 25)

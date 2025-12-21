@@ -1,4 +1,4 @@
-# 🚀 API Defender V2.4
+# 🚀 API Defender V2.6
 
 **API Defender** is a secure, cloud-integrated space shooter built to demonstrate **Advanced Design Patterns** within a real-world Python/Pygame architecture.
 
@@ -14,12 +14,13 @@ For the full technical analysis, diagrams, and pattern breakdowns, please refer 
 
 ---
 
-## 🔥 Key V2.5 Features
-- **Cloud-Synced Gameplay**: Every action is logged to local/remote REST APIs with **Asynchronous Log Batching** (V2.5).
+## 🔥 Key V2.6 Features
+- **Cloud-Synced Gameplay**: Every action is logged to local/remote REST APIs with **Asynchronous Log Batching**.
+- **New Enemy Subtypes**: Encounter the agile **Hunter** (tracked by red markers) and the armored **Heavy** (requires 2 hits).
+- **Timed Upgrades**: Power-ups like **Shield** and **Rapid Fire** are now temporary (10s), requiring tactical timing.
+- **Gameplay Balance**: Progression-locked Triple Shot (Wave 3+) and a strict 10-heart health cap for balanced difficulty.
 - **Extreme Performance**: Pre-rendered parallax StarField and static surface caching for ultra-smooth 60FPS.
-- **Robust Upgrades**: Enhanced **Decorator Pattern** with recursive unwrapping for stable power-up stacking.
 - **Interactive Menu**: Full keyboard navigation with Global Leaderboard rankings (fetched on demand).
-- **Advanced Physics**: Procedural Asteroid obstacles with rotation and drifting.
 - **Visual Polish**: Neon glows, pulsing engines, and glass-panel HUD with power-up indicators.
 
 ---
@@ -45,7 +46,7 @@ The project utilizes 6 major patterns to ensure scalability and clean separation
 
 ### 2. Launch
 ```bash
-python main.py
+python server.py
 ```
 
 ### 3. Build Executable

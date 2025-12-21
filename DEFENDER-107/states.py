@@ -3,7 +3,7 @@ import random
 import threading
 from abc import ABC, abstractmethod
 from settings import *
-from entities import FighterJet, EnemySquadron, Drone, RapidFireDecorator, ShieldDecorator, PowerUp, draw_heart, Asteroid, draw_shield_emblem, AUDIO
+from entities import FighterJet, EnemySquadron, Drone, Hunter, Heavy, RapidFireDecorator, ShieldDecorator, PowerUp, draw_heart, Asteroid, draw_shield_emblem, AUDIO
 from api_logger import APILogger
 import requests
 import json
@@ -309,11 +309,29 @@ class WarState(GameState):
         count = 3 + int(self.wave * 1.5)
         speed_boost = min(3.0, self.wave * 0.2) # Cap speed so it's not impossible
         
-        #Spawn enemies
+        #Spawn enemies based on wave
         for i in range(count):
             x = random.randint(50, SCREEN_WIDTH - 50)
-            y = random.randint(-200, -50) # Spawn above screen
-            self.squadron.add(Drone(x, y, speed_mod=speed_boost))
+            y = random.randint(-200, -50)
+            
+            roll = random.random()
+            if self.wave < 3:
+                # Only Drones in early waves
+                self.squadron.add(Drone(x, y, speed_mod=speed_boost))
+            elif self.wave < 6:
+                # Intro Hunters
+                if roll < 0.7:
+                    self.squadron.add(Drone(x, y, speed_mod=speed_boost))
+                else:
+                    self.squadron.add(Hunter(x, y, speed_mod=speed_boost))
+            else:
+                # All types in later waves
+                if roll < 0.5:
+                    self.squadron.add(Drone(x, y, speed_mod=speed_boost))
+                elif roll < 0.8:
+                    self.squadron.add(Hunter(x, y, speed_mod=speed_boost))
+                else:
+                    self.squadron.add(Heavy(x, y, speed_mod=speed_boost))
 
     #Input handling
     def handle_input(self, events, game):
@@ -354,6 +372,14 @@ class WarState(GameState):
     def update(self, game):
         self.stars.update()
         self.squadron.update()
+        
+        # Update player (handles timed effects)
+        p_status = self.player.update()
+        if p_status == "EXPIRED":
+            # Revert to normal FighterJet as requested
+            self.player = self.player.get_base_ship()
+            self.decorated = False
+
         self._update_projectiles()
         self._handle_spawn_logic(game)
         self._handle_powerups()
@@ -366,14 +392,18 @@ class WarState(GameState):
                 self.bullets.remove(b)
                 continue
             
-            # Drone Collision
-            for drone in self.squadron.children[:]:
-                if b.colliderect(drone.rect):
-                    self.squadron.add_explosion(drone.rect.centerx, drone.rect.centery)
-                    self.squadron.children.remove(drone)
+            # Drone/Hunter/Heavy Collision
+            for enemy in self.squadron.children[:]:
+                if b.colliderect(enemy.rect):
+                    # Check HP
+                    enemy.hp -= 1
+                    if enemy.hp <= 0:
+                        self.squadron.add_explosion(enemy.rect.centerx, enemy.rect.centery)
+                        self.squadron.children.remove(enemy)
+                        self.score += 100 * self.wave
+                        APILogger().log("ENTITY_DESTROY", f"{enemy.__class__.__name__} destroyed. Score: {self.score}")
+                    
                     if b in self.bullets: self.bullets.remove(b)
-                    self.score += 100 * self.wave
-                    APILogger().log("ENTITY_DESTROY", f"Drone destroyed. Score: {self.score}")
                     return # Bullet gone
 
             # Asteroid Collision
@@ -425,11 +455,19 @@ class WarState(GameState):
                      if not self.player.has_decorator(ShieldDecorator):
                           self.player = ShieldDecorator(self.player)
                 elif p.type == 'LIFE':
-                    self.player.get_base_ship().lives += 1
+                    base = self.player.get_base_ship()
+                    if base.lives < MAX_HEALTH:
+                        base.lives += 1
+                    else:
+                        APILogger().log("STATUS", "Health at CAP (10)")
                 elif p.type == 'RAPID':
-                    if not self.player.has_decorator(RapidFireDecorator):
-                         self.player = RapidFireDecorator(self.player)
-                         self.decorated = True
+                    # Wave Lock: Only unlock after Wave 3
+                    if self.wave >= 3:
+                        if not self.player.has_decorator(RapidFireDecorator):
+                             self.player = RapidFireDecorator(self.player)
+                             self.decorated = True
+                    else:
+                        APILogger().log("STATUS", "Rapid Fire locked until Wave 3")
                 self.powerups.remove(p)
 
     def _handle_collisions(self, game):
