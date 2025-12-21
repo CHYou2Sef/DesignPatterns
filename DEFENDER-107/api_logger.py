@@ -1,6 +1,9 @@
 # api_logger.py
+# Singleton logger for sending game events and scores to remote API
 import requests
 import threading
+import random
+
 
 class APILogger:
     _instance = None
