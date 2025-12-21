@@ -1,10 +1,12 @@
 import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from datetime import datetime
 
 # Initialize Flask App
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 # --- Configuration ---
 # Use environment variable for DB URL (Render/Heroku compatible), or default to local SQLite
@@ -72,11 +74,14 @@ def log_event():
     if not data or 'level' not in data or 'message' not in data:
         return jsonify({"error": "Invalid data"}), 400
 
-    new_log = GameLog(level=data['level'], message=data['message'])
-    db.session.add(new_log)
-    db.session.commit()
-    
-    return jsonify({"status": "logged"}), 201
+    try:
+        new_log = GameLog(level=data['level'], message=data['message'])
+        db.session.add(new_log)
+        db.session.commit()
+        return jsonify({"status": "logged", "id": new_log.id}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Database error", "details": str(e)}), 500
 
 @app.route('/leaderboard', methods=['GET'])
 def get_leaderboard():
@@ -92,12 +97,31 @@ def submit_score():
     data = request.json
     if not data or 'username' not in data or 'score' not in data:
         return jsonify({"error": "Invalid data"}), 400
-        
-    new_score = Score(username=data['username'], score=data['score'])
-    db.session.add(new_score)
-    db.session.commit()
     
-    return jsonify({"status": "score saved"}), 201
+    try:
+        new_score = Score(username=data['username'], score=data['score'])
+        db.session.add(new_score)
+        db.session.commit()
+        return jsonify({"status": "score saved", "id": new_score.id}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Database error", "details": str(e)}), 500
+
+@app.route('/stats', methods=['GET'])
+def get_stats():
+    """Get game statistics - total logs, total scores, highest score"""
+    try:
+        total_logs = GameLog.query.count()
+        total_scores = Score.query.count()
+        highest_score = db.session.query(db.func.max(Score.score)).scalar() or 0
+        
+        return jsonify({
+            "total_logs": total_logs,
+            "total_scores": total_scores,
+            "highest_score": highest_score
+        })
+    except Exception as e:
+        return jsonify({"error": "Database error", "details": str(e)}), 500
 
 # --- Setup ---
 with app.app_context():
