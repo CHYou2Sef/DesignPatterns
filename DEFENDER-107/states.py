@@ -33,9 +33,6 @@ class StarField:
     def draw(self, screen):
         theme = get_theme_colors()
         screen.fill(theme['BG']) # Clear screen with theme background
-        for star in self.stars:
-            pygame.draw.circle(screen, theme['STARS'], (int(star[0]), int(star[1])), star[3])
-        screen.fill(COLOR_BG) 
         # Layer 1
         screen.blit(self.layer1, (0, self.y1))
         screen.blit(self.layer1, (0, self.y1 - SCREEN_HEIGHT))
@@ -91,14 +88,6 @@ class MenuState(GameState):
 
     def handle_input(self, events, game):
         for e in events:
-            if e.type == pygame.KEYDOWN and e.key == pygame.K_RETURN:
-                # game.change_state(WarState()) -> Old way
-                game.change_state(NameInputState()) # New way
-            if e.type == pygame.KEYDOWN and e.key == pygame.K_r:
-                self.fetch_leaderboard()
-            if e.type == pygame.KEYDOWN and e.key == pygame.K_t:
-                toggle_theme()
-                APILogger().log("SYSTEM", f"Theme changed to {CURRENT_THEME} MODE")
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_RETURN:
                     # Execute selected menu item
@@ -116,6 +105,10 @@ class MenuState(GameState):
                 
                 if e.key == pygame.K_r:
                     self.fetch_leaderboard()
+                
+                if e.key == pygame.K_t:
+                    toggle_theme()
+                    APILogger().log("SYSTEM", f"Theme changed to {CURRENT_THEME} MODE")
 
     def update(self, game):
         self.stars.update()
@@ -563,12 +556,6 @@ class WarState(GameState):
         time_str = f"{seconds // 60:02}:{seconds % 60:02}"
         font = pygame.font.Font(None, 36)
         
-        # Glass Panel HUD
-        theme = get_theme_colors()
-        panel = pygame.Surface((SCREEN_WIDTH, 45), pygame.SRCALPHA)
-        pygame.draw.rect(panel, theme['PANEL_BG'], (0, 0, SCREEN_WIDTH, 45))
-        pygame.draw.line(panel, theme['PANEL_BORDER'], (0, 44), (SCREEN_WIDTH, 44), 2)
-        game.screen.blit(panel, (0, 0))
         # Glass Panel HUD from Cache
         game.screen.blit(self.hud_panel, (0, 0))
         

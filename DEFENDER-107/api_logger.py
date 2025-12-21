@@ -5,7 +5,6 @@ import threading
 import queue
 import time
 from settings import API_URL
-import random
 
 
 # --- PATTERN: SINGLETON ---
