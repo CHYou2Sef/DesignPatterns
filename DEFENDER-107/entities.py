@@ -23,12 +23,24 @@ def load_image_fallback(path, fallback_func, size):
                 return pygame.transform.scale(img, size)
         except: pass
         
-        print(f"Warning: Could not load {path}. Using fallback. Error: {e}")
+        # print(f"Warning: Could not load {path}. Using fallback.")
         surf = pygame.Surface(size, pygame.SRCALPHA)
-        # Draw an opaque background for fallback to ensure visibility
-        # pygame.draw.rect(surf, (30, 30, 30, 100), (0, 0, size[0], size[1])) 
+        # Ensure fallback drawing is done at the center of the surface
         fallback_func(surf, size[0]//2, size[1]//2)
         return surf
+
+def draw_circular_timer(screen, center, progress, color, radius=15):
+    """Draws a circular 'clock' timer representing power-up progress."""
+    rect = pygame.Rect(center[0] - radius, center[1] - radius, radius * 2, radius * 2)
+    # Background circle (dim)
+    pygame.draw.circle(screen, (50, 50, 50, 150), center, radius)
+    # Arc representing remaining time
+    # progress is 0.0 (full) to 1.0 (empty) or vice versa? 
+    # Let's say progress is 1.0 -> 0.0 (time left)
+    angle = progress * 2 * math.pi
+    if angle > 0:
+        # pygame.draw.arc uses radians. Start at top (-pi/2)
+        pygame.draw.arc(screen, color, rect, -math.pi/2, -math.pi/2 + angle, 3)
 
 class AudioManager:
     _instance = None
@@ -145,8 +157,8 @@ def cache_static_assets():
     
     # Enemies (Images + Fallback)
     DRONE_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: draw_drone_procedural(s, x, y), (60, 60))
-    HUNTER_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.circle(s, (255, 100, 0), (x, y), 20), (40, 40))
-    HEAVY_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.rect(s, (100, 0, 150), (x-30, y-30, 60, 60)), (60, 60))
+    HUNTER_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.polygon(s, (255, 50, 50), [(x, y-20), (x-20, y+20), (x+20, y+20)]), (40, 40))
+    HEAVY_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.rect(s, (150, 0, 200), (x-30, y-30, 60, 60)), (60, 60))
     
     # Jet
     JET_SURFACE = pygame.Surface((60, 80), pygame.SRCALPHA)

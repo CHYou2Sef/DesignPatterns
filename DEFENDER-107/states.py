@@ -3,7 +3,7 @@ import random
 import threading
 from abc import ABC, abstractmethod
 from settings import *
-from entities import FighterJet, EnemySquadron, Drone, Hunter, Heavy, RapidFireDecorator, ShieldDecorator, PowerUp, draw_heart, Asteroid, draw_shield_emblem, AUDIO
+from entities import FighterJet, EnemySquadron, Drone, Hunter, Heavy, RapidFireDecorator, ShieldDecorator, PowerUp, draw_heart, Asteroid, draw_shield_emblem, AUDIO, draw_circular_timer
 from api_logger import APILogger
 import requests
 import json
@@ -467,7 +467,13 @@ class WarState(GameState):
         if random.randint(0, 1000) < 8:
             x = random.randint(50, SCREEN_WIDTH-50)
             roll = random.random()
-            p_type = 'SHIELD' if roll < 0.4 else 'LIFE' if roll < 0.7 else 'RAPID'
+            
+            # 1- the 3 shoots don't appears in the 3 first waves
+            if self.wave < 3:
+                p_type = 'SHIELD' if roll < 0.5 else 'LIFE'
+            else:
+                p_type = 'SHIELD' if roll < 0.4 else 'LIFE' if roll < 0.7 else 'RAPID'
+            
             self.powerups.append(PowerUp(x, -50, p_type))
 
     def _handle_powerups(self):
@@ -607,11 +613,37 @@ class WarState(GameState):
             game.screen.blit(notif_surface, (x_pos, y_pos))
             
         # --- ACTIVE POWER-UPS ICONS ---
-        # Show Shield/Rapid icons next to score if active
+        # Show Shield/Rapid icons next to score if active with Circular Timers
+        icon_x = 180
+        
+        # Shield
         if self.player.has_decorator(ShieldDecorator):
-            draw_shield_emblem(game.screen, 180, 25, 20)
-        if self.decorated: # Rapid Fire
-            pygame.draw.rect(game.screen, (255, 255, 0), (210, 15, 10, 20))
+            # Find the decorator in the stack to get its time
+            curr = self.player
+            while curr and not isinstance(curr, ShieldDecorator):
+                curr = getattr(curr, 'ship', None)
+            
+            if curr:
+                draw_shield_emblem(game.screen, icon_x, 25, 20)
+                # Progress for timer
+                elapsed = pygame.time.get_ticks() - curr.start_time
+                progress = max(0, (curr.duration - elapsed) / curr.duration)
+                draw_circular_timer(game.screen, (icon_x, 25), progress, (0, 200, 255))
+                icon_x += 40
+        
+        # Rapid Fire (3 shoots)
+        if self.decorated:
+            curr = self.player
+            while curr and not isinstance(curr, RapidFireDecorator):
+                curr = getattr(curr, 'ship', None)
+            
+            if curr:
+                # Use a small rect or icon for Rapid Fire
+                pygame.draw.rect(game.screen, (255, 255, 0), (icon_x - 5, 15, 10, 20))
+                elapsed = pygame.time.get_ticks() - curr.start_time
+                progress = max(0, (curr.duration - elapsed) / curr.duration)
+                draw_circular_timer(game.screen, (icon_x, 25), progress, (255, 255, 0))
+                icon_x += 40
 
 # --- VICTORY STATE ---
 class VictoryState(GameState):
