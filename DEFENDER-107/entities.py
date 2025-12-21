@@ -218,7 +218,7 @@ class RapidFireDecorator(Ship):
 
     def draw(self, screen):
         self.ship.draw(screen)
-        # Draw Pulsing Energy Aura (CHANGE 2: Enhanced visual effects)
+        # Draw Pulsing Energy Aura with animations
         self.pulse_offset += 0.15
         pulse_size = 40 + math.sin(self.pulse_offset) * 5
         alpha = int(128 + math.sin(self.pulse_offset * 2) * 127)
@@ -250,7 +250,7 @@ class ShieldDecorator(Ship):
 
     def draw(self, screen):
         self.ship.draw(screen)
-        # Draw Pulsing Blue Bubble (CHANGE 2: Enhanced visual effects)
+        # Draw Pulsing Blue Bubble with animations
         self.pulse_offset += 0.1
         pulse_size = 50 + math.sin(self.pulse_offset) * 3
         alpha = int(100 + math.sin(self.pulse_offset * 1.5) * 50)
