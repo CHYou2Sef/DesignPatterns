@@ -1,4 +1,6 @@
 # main.py
+import random
+
 import pygame
 import sys
 from settings import *

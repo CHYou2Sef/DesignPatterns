@@ -1,9 +1,12 @@
 # api_logger.py
+# Singleton logger for sending game events and scores to remote API
 import requests
 import threading
 import queue
 import time
 from settings import API_URL
+import random
+
 
 # --- PATTERN: SINGLETON ---
 # Ensures only one APILogger instance exists.
