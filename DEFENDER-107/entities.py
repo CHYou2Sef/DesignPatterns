@@ -8,26 +8,55 @@ from settings import *
 from api_logger import APILogger
 
 # --- ASSETS & AUDIO MANAGER ---
+import os
+import sys
+
 def load_image_fallback(path, fallback_func, size):
     """Try to load an image, fallback to procedural drawing if it fails."""
+    # Robust path construction: relative to this file
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Handle PyInstaller _MEIPASS for bundled resources
+    if hasattr(sys, '_MEIPASS'):
+        base_dir = sys._MEIPASS
+
+    # Construct the absolute path
+    norm_path = os.path.join(base_dir, *path.replace('\\', '/').split('/'))
+    
     try:
-        # Try loading
-        img = pygame.image.load(path).convert_alpha()
-        return pygame.transform.scale(img, size)
-    except Exception as e:
-        # If it fails, maybe try without "img/" prefix in case it's in root
-        alt_path = path.split('/')[-1]
-        try:
-            if alt_path != path:
-                img = pygame.image.load(alt_path).convert_alpha()
-                return pygame.transform.scale(img, size)
-        except: pass
+        # Check primary path
+        if os.path.exists(norm_path):
+            img = pygame.image.load(norm_path).convert_alpha()
+            return pygame.transform.scale(img, size)
+        else:
+            print(f"DEBUG: Asset not found at {norm_path}")
         
-        # print(f"Warning: Could not load {path}. Using fallback.")
-        surf = pygame.Surface(size, pygame.SRCALPHA)
-        # Ensure fallback drawing is done at the center of the surface
-        fallback_func(surf, size[0]//2, size[1]//2)
-        return surf
+        # Try a sibling match (same name, different extension)
+        base_no_ext, ext = os.path.splitext(norm_path)
+        for alt_ext in ['.png', '.jpg', '.jpeg', '.bmp']:
+            if alt_ext.lower() != ext.lower():
+                alt_path = base_no_ext + alt_ext
+                if os.path.exists(alt_path):
+                    img = pygame.image.load(alt_path).convert_alpha()
+                    return pygame.transform.scale(img, size)
+                
+        # Try looking in the root directory (one level up from assets folder)
+        root_match = os.path.join(base_dir, os.path.basename(path))
+        if os.path.exists(root_match):
+            img = pygame.image.load(root_match).convert_alpha()
+            return pygame.transform.scale(img, size)
+        else:
+            if not hasattr(sys, '_MEIPASS'): # Avoid spamming in temp dirs
+                 print(f"DEBUG: Also checked {root_match}")
+            
+    except Exception as e:
+        print(f"Critical Error loading asset {path}: {e}")
+
+    # Final Fallback: Procedural
+    # print(f"DEBUG: Falling back for {path} (looked at {norm_path})")
+    surf = pygame.Surface(size, pygame.SRCALPHA)
+    fallback_func(surf, size[0]//2, size[1]//2)
+    return surf
 
 def draw_circular_timer(screen, center, progress, color, radius=15):
     """Draws a circular 'clock' timer representing power-up progress."""
@@ -61,20 +90,31 @@ class AudioManager:
         except:
             print("Audio Mixer failed to initialize.")
 
+    def _get_abs_path(self, file):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        if hasattr(sys, '_MEIPASS'):
+            base_dir = sys._MEIPASS
+        return os.path.join(base_dir, file)
+
     def load_sounds(self):
-        """Lazy loading of sounds"""
+        """Lazy loading of sounds with absolute paths"""
         sound_files = {
             'shoot': 'shoot.wav',
             'explosion': 'explosion.wav'
         }
         for name, file in sound_files.items():
+            abs_p = self._get_abs_path(file)
             try:
-                self._sounds[name] = pygame.mixer.Sound(file)
-                if name == 'shoot': self._sounds[name].set_volume(0.4)
-                if name == 'explosion': self._sounds[name].set_volume(0.5)
-            except:
+                if os.path.exists(abs_p):
+                    self._sounds[name] = pygame.mixer.Sound(abs_p)
+                    if name == 'shoot': self._sounds[name].set_volume(0.4)
+                    if name == 'explosion': self._sounds[name].set_volume(0.5)
+                else:
+                    print(f"DEBUG: Sound file not found: {abs_p}")
+                    self._sounds[name] = None
+            except Exception as e:
                 self._sounds[name] = None
-                print(f"Warning: Could not load sound {file}")
+                print(f"Warning: Could not load sound {file}: {e}")
 
     def play_sound(self, name):
         if self._sound_on and name in self._sounds and self._sounds[name]:
@@ -86,11 +126,15 @@ class AudioManager:
 
     def play_music(self, file, loop=-1):
         if not self._music_on: return
+        abs_p = self._get_abs_path(file)
         try:
-            pygame.mixer.music.load(file)
-            pygame.mixer.music.play(loop)
-        except:
-            print(f"Warning: Could not play music {file}")
+            if os.path.exists(abs_p):
+                pygame.mixer.music.load(abs_p)
+                pygame.mixer.music.play(loop)
+            else:
+                print(f"DEBUG: Music file not found: {abs_p}")
+        except Exception as e:
+            print(f"Warning: Could not play music {file}: {e}")
 
     def stop_music(self):
         pygame.mixer.music.stop()
@@ -156,9 +200,14 @@ def cache_static_assets():
     draw_shield_emblem_procedural(SHIELD_EMBLEM_SURFACE, 20, 20, 25)
     
     # Enemies (Images + Fallback)
-    DRONE_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.circle(s, (100, 100, 100), (x, y), 25), (60, 60))
-    HUNTER_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.circle(s, (255, 50, 50), (x, y), 18), (40, 40))
-    HEAVY_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: pygame.draw.circle(s, (150, 0, 200), (x, y), 28), (60, 60))
+    DRONE_SURFACE = load_image_fallback('img/enemy1.png', lambda s, x, y: draw_drone_procedural(s, x, y), (60, 60))
+    # Try specific images for Hunter and Heavy if they exist, otherwise fallback to enemy1 or procedural
+    HUNTER_SURFACE = load_image_fallback('img/enemy1.png', 
+                                         lambda s, x, y: load_image_fallback('img/enemy1.png', 
+                                                                            lambda s2, x2, y2: pygame.draw.circle(s2, (255, 50, 50), (x2, y2), 18), (40, 40)), (40, 40))
+    HEAVY_SURFACE = load_image_fallback('img/enemy1.png', 
+                                         lambda s, x, y: load_image_fallback('img/enemy1.png', 
+                                                                            lambda s2, x2, y2: pygame.draw.circle(s2, (150, 0, 200), (x2, y2), 28), (60, 60)), (60, 60))
     
     # Jet (Player Ship) - Now with image loading and rounded fallback
     JET_SURFACE = load_image_fallback('img/player_ship.jpg', lambda s, x, y: draw_jet_procedural(s, x, y), (60, 80))
