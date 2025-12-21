@@ -195,8 +195,12 @@ class FighterJet(Ship):
     def get_rect(self): return self.rect
 
 class RapidFireDecorator(Ship):
+    """DECORATOR PATTERN: Adds rapid-fire capability to any Ship.
+    Fires 3 bullets instead of 1, with visual energy aura effect.
+    Can be stacked with other decorators for combined effects."""
     def __init__(self, wrapped_ship):
         self.ship = wrapped_ship
+        self.pulse_offset = 0  # For animated visual effects
         APILogger().log("UPGRADE", "Tactical Nuke/Rapid Fire Equipped")
 
     def move(self, dx): self.ship.move(dx)
@@ -214,12 +218,22 @@ class RapidFireDecorator(Ship):
 
     def draw(self, screen):
         self.ship.draw(screen)
-        # Draw Energy Shield Aura
-        pygame.draw.circle(screen, (0, 255, 255), self.ship.get_rect().center, 40, 1)
+        # Draw Pulsing Energy Aura (CHANGE 2: Enhanced visual effects)
+        self.pulse_offset += 0.15
+        pulse_size = 40 + math.sin(self.pulse_offset) * 5
+        alpha = int(128 + math.sin(self.pulse_offset * 2) * 127)
+        aura_surf = pygame.Surface((int(pulse_size*2), int(pulse_size*2)), pygame.SRCALPHA)
+        pygame.draw.circle(aura_surf, (0, 255, 255, alpha), (int(pulse_size), int(pulse_size)), int(pulse_size), 2)
+        screen.blit(aura_surf, (self.ship.get_rect().centerx - int(pulse_size), self.ship.get_rect().centery - int(pulse_size)))
 
 class ShieldDecorator(Ship):
+    """DECORATOR PATTERN: Adds single-use shield protection to any Ship.
+    Absorbs one hit then breaks. Visual: Blue pulsing bubble.
+    Returns 'BREAK_SHIELD' signal on damage to trigger unwrapping."""
     def __init__(self, wrapped_ship):
         self.ship = wrapped_ship
+        self.shield_strength = 1  # Single hit protection
+        self.pulse_offset = 0  # For animated visual effects
         APILogger().log("UPGRADE", "Energy Shield Activated")
 
     def move(self, dx): self.ship.move(dx)
@@ -236,14 +250,64 @@ class ShieldDecorator(Ship):
 
     def draw(self, screen):
         self.ship.draw(screen)
-        # Draw Blue Bubble
-        pygame.draw.circle(screen, (0, 100, 255), self.ship.get_rect().center, 50, 2)
+        # Draw Pulsing Blue Bubble (CHANGE 2: Enhanced visual effects)
+        self.pulse_offset += 0.1
+        pulse_size = 50 + math.sin(self.pulse_offset) * 3
+        alpha = int(100 + math.sin(self.pulse_offset * 1.5) * 50)
+        bubble_surf = pygame.Surface((int(pulse_size*2), int(pulse_size*2)), pygame.SRCALPHA)
+        pygame.draw.circle(bubble_surf, (0, 100, 255, alpha), (int(pulse_size), int(pulse_size)), int(pulse_size), 3)
+        screen.blit(bubble_surf, (self.ship.get_rect().centerx - int(pulse_size), self.ship.get_rect().centery - int(pulse_size)))
+
+# --- STRATEGY/FACTORY: POWER UPS ---
+# CHANGE 1: New DoubleShieldDecorator for enhanced protection
+class DoubleShieldDecorator(Ship):
+    """DECORATOR PATTERN: Adds double-layer shield protection to any Ship.
+    Absorbs TWO hits before breaking. Visual: Dual-layer purple/blue bubble.
+    Demonstrates decorator pattern flexibility with enhanced functionality."""
+    def __init__(self, wrapped_ship):
+        self.ship = wrapped_ship
+        self.shield_strength = 2  # Double hit protection
+        self.pulse_offset = 0
+        APILogger().log("UPGRADE", "Double Energy Shield Activated - 2 Hits Protection")
+
+    def move(self, dx): self.ship.move(dx)
+    def set_x(self, x): self.ship.set_x(x)
+    def get_rect(self): return self.ship.get_rect()
+
+    def shoot(self, bullets_list):
+        self.ship.shoot(bullets_list)
+
+    def take_damage(self):
+        self.shield_strength -= 1
+        if self.shield_strength > 0:
+            APILogger().log("DEFENSE", f"Double Shield Absorbed Impact - {self.shield_strength} layers remaining")
+            return False  # Shield still active
+        else:
+            APILogger().log("DEFENSE", "Double Shield Depleted")
+            return "BREAK_SHIELD"  # Signal to unwrap
+
+    def draw(self, screen):
+        self.ship.draw(screen)
+        # Draw dual-layer pulsing shield (CHANGE 2: Enhanced visual effects)
+        self.pulse_offset += 0.12
+        
+        # Outer layer (purple)
+        outer_size = 55 + math.sin(self.pulse_offset) * 4
+        outer_alpha = int(80 + math.sin(self.pulse_offset * 1.3) * 40)
+        outer_surf = pygame.Surface((int(outer_size*2), int(outer_size*2)), pygame.SRCALPHA)
+        pygame.draw.circle(outer_surf, (150, 50, 255, outer_alpha), (int(outer_size), int(outer_size)), int(outer_size), 3)
+        screen.blit(outer_surf, (self.ship.get_rect().centerx - int(outer_size), self.ship.get_rect().centery - int(outer_size)))
+        
+        # Inner layer (blue) - only if 2 layers remain
+        if self.shield_strength >= 2:
+            inner_size = 45 + math.sin(self.pulse_offset + 1.5) * 3
+            pygame.draw.circle(screen, (0, 150, 255), self.ship.get_rect().center, 45, 2)
 
 # --- STRATEGY/FACTORY: POWER UPS ---
 class PowerUp(GameEntity):
     def __init__(self, x, y, type_name):
         self.rect = pygame.Rect(x, y, 30, 30)
-        self.type = type_name # 'SHIELD' or 'LIFE'
+        self.type = type_name # 'SHIELD', 'DOUBLE_SHIELD', or 'LIFE'
     
     def update(self):
         self.rect.y += 3 # Fall down

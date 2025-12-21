@@ -24,10 +24,14 @@ A Python/Pygame-based space defender game that demonstrates 4 key design pattern
 
 ### 3. **DECORATOR Pattern** (The Player)
 
-- **Classes:** `Ship` (abstract), `BasicShip`, `RapidFireDecorator`
-- **Purpose:** Add new functionality (rapid fire) to the ship without modifying the original class
-- **Implementation:** `RapidFireDecorator` wraps a `Ship` and adds double-shot capability
-- **Benefit:** Flexible runtime feature addition without inheritance bloat
+- **Classes:** `Ship` (abstract), `FighterJet`, `RapidFireDecorator`, `ShieldDecorator`, `DoubleShieldDecorator`
+- **Purpose:** Add new functionality to the ship dynamically without modifying the original class
+- **Implementation:** 
+  - `RapidFireDecorator` wraps a `Ship` and adds triple-shot capability with pulsing cyan aura
+  - `ShieldDecorator` wraps a `Ship` and adds single-hit protection with blue pulsing bubble
+  - `DoubleShieldDecorator` wraps a `Ship` and adds double-hit protection with dual-layer purple/blue shields
+- **Benefit:** Flexible runtime feature addition without inheritance bloat, decorators can be stacked
+- **Visual Effects:** Each decorator features animated pulsing effects using sine waves for alpha and size variations
 
 ### 4. **STATE Pattern** (The Game Flow)
 
@@ -152,7 +156,7 @@ Log levels: `ACTION`, `UPGRADE`, `GAME`, `STATE`, `SYSTEM`
   - Red enemies: `(200, 50, 50)`
   - Yellow bullets: `(255, 255, 0)`
   - Gold power-up indicator: `(255, 215, 0)`
-
+////////////////////////////////////////////
 - **Screen Resolution:** 800x600 pixels
 - **Frame Rate:** 60 FPS
 
