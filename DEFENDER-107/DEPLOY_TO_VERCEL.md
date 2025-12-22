@@ -27,7 +27,7 @@ Since **API Defender** is a Python/Pygame application, it cannot run natively on
     - Go to Vercel Dashboard -> **Add New...** -> **Project**.
     - Import your `DEFENDER-107` repository.
     - **Framework Preset:** select `Other`.
-    - **Root Directory:** Click `Edit` and select `build/web`.
+    - **Root Directory:** Click `Edit` and entering `DEFENDER-107/build/web`.
     - Click **Deploy**.
 
 ## Important Notes
@@ -35,3 +35,12 @@ Since **API Defender** is a Python/Pygame application, it cannot run natively on
 - **Performance:** The first load might take a few seconds as it downloads the Python runtime (~10MB).
 - **Audio:** Browser policies require the user to interact (click/tap) with the page before audio plays.
 - **Networking:** The online leaderboard and logging features are currently disabled in the Web version to prevent crashes (browsers don't allow direct socket connections).
+
+## Troubleshooting
+
+### 1. Black Screen / Game Not Starting?
+If the screen is black and the console says `MEDIA USER ACTION REQUIRED`, **click anywhere on the black window**.
+*   **Why?** Modern browsers block audio from playing automatically. The game is paused waiting for your permission to start the sound engine.
+
+### 2. 404 Not Found
+Ensure your Vercel **Root Directory** is set to `DEFENDER-107/build/web`.

@@ -138,3 +138,17 @@ classDiagram
 - **Defensive Asset Loading**: Implemented a `load_image_fallback` utility that uses absolute path resolution (`os.path.abspath`) and `sys._MEIPASS` checks to guarantee game stability in all environments (IDE vs EXE). It includes cross-extension matching and falls back to procedural drawing only as a last resort.
 - **Optimized Rendering Pipeline**: Utilized `pygame.SCALED` for hardware-agnostic fullscreen support. Implemented aggressive surface caching with `.convert_alpha()` to pre-compile complex assets (StarField, HUD) into GPU-friendly formats, maintaining 60FPS at high resolutions.
 - **Health Cap Implementation**: Enforced a strict 10-heart limit on player health to prevent infinite scaling and maintain game tension in later waves.
+
+## 6. Deployment & Portability
+To ensure maximum accessibility, the project was successfully ported to **WebAssembly (WASM)** using `pygbag`.
+
+### 6.1 Web Architecture
+- **Runtime**: The game runs entirely client-side in the browser using the CPython WASM runtime.
+- **Modifications**:
+    - **Threading**: The threaded `APILogger` was modified to bypass network calls in the web environment, as browser sandboxes restrict direct socket access.
+    - **Asset Loading**: `pygbag` packages assets into a virtual file system (`.apk`), which the game accesses transparently via standard Python I/O.
+    - **Event Loop**: The main loop uses `asyncio` to yield control to the browser's event loop, preventing UI freezes.
+
+### 6.2 Hosting
+The static WASM build is deployed on **Vercel**, demonstrating a "Serverless" distribution model for a rich-client Python application.
+
