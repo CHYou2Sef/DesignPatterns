@@ -4,6 +4,7 @@ import requests
 import threading
 import queue
 import time
+import sys
 from settings import API_URL
 
 
@@ -16,11 +17,15 @@ class APILogger:
     _api_key = "Defender-gamo-pwd-2025" 
     _queue = queue.Queue()
     _worker_thread = None
+    _is_web = sys.platform == 'emscripten'
 
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(APILogger, cls).__new__(cls)
-            cls._instance._start_worker()
+            if not cls._instance._is_web:
+                cls._instance._start_worker()
+            else:
+                print("APILogger: Web Mode detected. Networking disabled.")
         return cls._instance
 
     def _start_worker(self):
@@ -75,12 +80,20 @@ class APILogger:
         except: pass
 
     def log(self, level, message):
+        if self._is_web:
+            print(f"[LOG] {level}: {message}")
+            return
+
         headers = {"X-API-KEY": self._api_key}
         payload = {"level": level, "message": message}
         # Priority 1 for normal logs (batched)
         self._queue.put(('POST', self._url, payload, headers, 1))
 
     def submit_score(self, username, score):
+        if self._is_web:
+            print(f"[SCORE] {username}: {score} (Local Only)")
+            return
+
         headers = {"X-API-KEY": self._api_key}
         payload = {"username": username, "score": score}
         score_url = self._url.replace("/log", "/score")
@@ -88,6 +101,8 @@ class APILogger:
         self._queue.put(('POST', score_url, payload, headers, 2))
 
     def shutdown(self):
+        if self._is_web:
+            return
         self._queue.put(None)
         if self._worker_thread:
             self._worker_thread.join(timeout=2) # Wait up to 2 seconds for worker to finish

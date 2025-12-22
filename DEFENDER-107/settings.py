@@ -4,7 +4,8 @@
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 FPS = 60
-FULLSCREEN = True
+import sys
+FULLSCREEN = True if sys.platform != 'emscripten' else False
 
 # Network
 API_URL = "http://127.0.0.1:5000/log"
