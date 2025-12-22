@@ -20,6 +20,8 @@ For the full technical analysis, diagrams, and pattern breakdowns, please refer 
 - **Timed Upgrades**: Power-ups like **Shield** and **Rapid Fire** are now temporary (10s), requiring tactical timing.
 - **Gameplay Balance**: Progression-locked Triple Shot (Wave 3+) and a strict 10-heart health cap for balanced difficulty.
 - **Extreme Performance**: Pre-rendered parallax StarField and static surface caching for ultra-smooth 60FPS.
+- **Fullscreen Mode**: Adaptive `SCALED` rendering that looks great on any monitor, with dynamic toggling ('F').
+- **Smart Asset Loading**: Robust fallbacks that auto-detect absolute paths and generate procedural assets if files are missing.
 - **Interactive Menu**: Full keyboard navigation with Global Leaderboard rankings (fetched on demand).
 - **Visual Polish**: Neon glows, pulsing engines, and glass-panel HUD with power-up indicators.
 
@@ -51,7 +53,7 @@ python server.py
 
 ### 3. Build Executable
 ```bash
-pyinstaller --noconsole --onefile --name "ApiDefender" main.py
+pyinstaller --noconsole --onefile --add-data "img;img" --name "DEFENDER_107" main.py
 ```
 
 ---
@@ -60,6 +62,7 @@ pyinstaller --noconsole --onefile --name "ApiDefender" main.py
 - **Mouse**: Steering & Aiming
 - **Left Click / Space**: Fire Cannons
 - **ESC / P**: Pause Mission
+- **F**: Toggle Fullscreen
 - **ENTER**: Select / Start
 
 ---

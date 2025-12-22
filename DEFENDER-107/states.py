@@ -10,6 +10,12 @@ import json
 
 # --- COSMOS BACKGROUND GENERATOR ---
 class StarField:
+    """
+    PERFORMANCE OPTIMIZATION: 
+    Instead of drawing 100 separate star rectangles every frame (CPU heavy),
+    we pre-render them onto transparent surfaces (Layers).
+    We then just blit these 2 layers with offsets to create a 'Parallax' effect.
+    """
     def __init__(self):
         # Pre-render two layers of stars for a parallax effect
         self.layer1 = self._create_star_layer(SCREEN_WIDTH, SCREEN_HEIGHT, 50, 1)
@@ -18,7 +24,8 @@ class StarField:
         self.y2 = 0
 
     def _create_star_layer(self, w, h, count, size):
-        surf = pygame.Surface((w, h), pygame.SRCALPHA)
+        # Optimized for blit speed
+        surf = pygame.Surface((w, h), pygame.SRCALPHA).convert_alpha()
         for _ in range(count):
             x = random.randint(0, w)
             y = random.randint(0, h)
@@ -41,9 +48,9 @@ class StarField:
         screen.blit(self.layer2, (0, self.y2 - SCREEN_HEIGHT))
 
 # --- PATTERN: STATE ---
-# GameState is the base 'State' interface. 
-# MenuState, WarState, etc., are 'Concrete States'.
-# Transitions are handled via game.change_state() in main.py.
+# This serves as the 'State' interface.
+# The Context (WarGame) delegates all behavior (Input, Update, Draw) to the current state object.
+# This eliminates massive if/else chains in the main loop to check "if menu:", "if game:", etc.
 class GameState(ABC):
     @abstractmethod
     def handle_input(self, events, game): pass
@@ -64,8 +71,9 @@ class MenuState(GameState):
         self.fetch_leaderboard()
         AUDIO.load_sounds()
         AUDIO.play_music('music.mp3')
-        # Pre-render Cyber Grid
-        self.grid_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT + 50), pygame.SRCALPHA)
+        AUDIO.play_music('music.mp3')
+        # Pre-render Cyber Grid - Optimized
+        self.grid_surf = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT + 50), pygame.SRCALPHA).convert_alpha()
         grid_color = (0, 50, 100)
         for x in range(0, SCREEN_WIDTH, 50):
             pygame.draw.line(self.grid_surf, grid_color, (x, 0), (x, SCREEN_HEIGHT + 50), 1)
@@ -250,8 +258,10 @@ class OptionsState(GameState):
 # --- PAUSE STATE ---
 class PauseState(GameState):
     """
-    MEMENTO-ish: Freezes the previous state and overlays UI.
-    Inherits previous state behavior without updating it.
+    MEMENTO-ish BEHAVIOR: 
+    This state holds a reference to the 'previous_state' (the running WarState).
+    It freezes the game logic but continues to draw the 'previous_state' in the background,
+    rendering a semi-transparent overlay on top.
     """
     def __init__(self, war_state):
         self.previous_state = war_state
@@ -313,8 +323,8 @@ class WarState(GameState):
         # Initial Wave
         self.spawn_wave()
         
-        # Pre-render HUD Panel
-        self.hud_panel = pygame.Surface((SCREEN_WIDTH, 45), pygame.SRCALPHA)
+        # Pre-render HUD Panel - Optimized
+        self.hud_panel = pygame.Surface((SCREEN_WIDTH, 45), pygame.SRCALPHA).convert_alpha()
         pygame.draw.rect(self.hud_panel, (20, 20, 40, 180), (0, 0, SCREEN_WIDTH, 45))
         pygame.draw.line(self.hud_panel, (0, 150, 255), (0, 44), (SCREEN_WIDTH, 44), 2)
 
@@ -539,8 +549,12 @@ class WarState(GameState):
         game.change_state(GameOverState(self.score, self.wave))
 
     def draw(self, game):
+        # Draw Background
         self.stars.draw(game.screen)
         
+        # Draw all entities via polymorphism
+        # The WarState doesn't need to know if it's drawing a Drone or a Hunter, 
+        # or if the player has a Shield or not. It just calls .draw().
         self.player.draw(game.screen)
         self.squadron.draw(game.screen)
         for ast in self.obstacles: 

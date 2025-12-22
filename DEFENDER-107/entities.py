@@ -21,15 +21,15 @@ def load_image_fallback(path, fallback_func, size):
         base_dir = sys._MEIPASS
 
     # Construct the absolute path
+    # NOTE: We use *path.replace to handle mixed slashes from different OS inputs
     norm_path = os.path.join(base_dir, *path.replace('\\', '/').split('/'))
     
     try:
-        # Check primary path
+        # 1. Try the exact path first
         if os.path.exists(norm_path):
             img = pygame.image.load(norm_path).convert_alpha()
+            print(f"LOADER: [SUCCESS] Loaded Image from {norm_path}")
             return pygame.transform.scale(img, size)
-        else:
-            print(f"DEBUG: Asset not found at {norm_path}")
         
         # Try a sibling match (same name, different extension)
         base_no_ext, ext = os.path.splitext(norm_path)
@@ -38,23 +38,22 @@ def load_image_fallback(path, fallback_func, size):
                 alt_path = base_no_ext + alt_ext
                 if os.path.exists(alt_path):
                     img = pygame.image.load(alt_path).convert_alpha()
+                    print(f"LOADER: [SUCCESS] Found Image with alt extension: {alt_path}")
                     return pygame.transform.scale(img, size)
                 
         # Try looking in the root directory (one level up from assets folder)
         root_match = os.path.join(base_dir, os.path.basename(path))
         if os.path.exists(root_match):
             img = pygame.image.load(root_match).convert_alpha()
+            print(f"LOADER: [SUCCESS] Found Image in root directory: {root_match}")
             return pygame.transform.scale(img, size)
-        else:
-            if not hasattr(sys, '_MEIPASS'): # Avoid spamming in temp dirs
-                 print(f"DEBUG: Also checked {root_match}")
             
     except Exception as e:
-        print(f"Critical Error loading asset {path}: {e}")
+        print(f"LOADER: [ERROR] Failed to load asset {path}: {e}")
 
     # Final Fallback: Procedural
-    # print(f"DEBUG: Falling back for {path} (looked at {norm_path})")
-    surf = pygame.Surface(size, pygame.SRCALPHA)
+    print(f"LOADER: [FALLBACK] Using procedural drawing for {path}")
+    surf = pygame.Surface(size, pygame.SRCALPHA).convert_alpha()
     fallback_func(surf, size[0]//2, size[1]//2)
     return surf
 
@@ -313,8 +312,10 @@ class Particle(GameEntity):
             screen.blit(surf, (self.x - surf.get_width()//2, self.y - surf.get_height()//2))
 
 # --- PATTERN: COMPOSITE ---
-# The Drone is the 'Leaf', and EnemySquadron is the 'Composite'.
-# Both inherit from GameEntity to allow uniform treatment.
+# The Drone, Hunter, and Heavy are 'Leaf' nodes.
+# EnemySquadron is the 'Composite' node that contains them.
+# This allows the Game Loop to treat a single enemy and a group of enemies identically.
+# Both inherit from GameEntity to ensure interface consistency.
 class Drone(GameEntity):
     def __init__(self, x, y, speed_mod=0):
         self.rect = pygame.Rect(x, y, 40, 40)
@@ -444,9 +445,10 @@ class EnemySquadron(GameEntity):
             p.draw(screen)
 
 # --- PATTERN: DECORATOR ---
-# The Ship is the 'Component'.
-# RapidFireDecorator and ShieldDecorator are 'Concrete Decorators'.
-# This allows adding behaviors (Shields, Multi-shot) without modifying the FighterJet class.
+# The abstract 'Ship' class defines the component interface.
+# 'FighterJet' is the Concrete Component (the base object).
+# 'RapidFireDecorator' and 'ShieldDecorator' are Concrete Decorators that wrap the ship.
+# KEY FEATURE: These decorators stack recursively (e.g., Shield(Rapid(Ship))).
 class Ship(ABC):
     @abstractmethod
     def update(self): pass
@@ -610,7 +612,9 @@ class ShieldDecorator(Ship):
         if pulse > 10:
             pygame.draw.circle(screen, (0, 255, 255, 100), self.ship.get_rect().center, 52, 1)
 
-# --- STRATEGY/FACTORY: POWER UPS ---
+# --- PATTERN: FACTORY / STRATEGY ---
+# While simple, this acts as a factory creating different power-up types.
+# The 'type_name' determines the strategy used when the player picks it up.
 class PowerUp(GameEntity):
     def __init__(self, x, y, type_name):
         self.rect = pygame.Rect(x, y, 30, 30)

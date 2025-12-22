@@ -8,6 +8,9 @@ from states import MenuState
 from entities import initialize_entities
 from api_logger import APILogger
 
+# --- ASYNCIO FOR WEB ---
+# We use asyncio to make the game compatible with 'pygbag' for web deployment.
+# This allows the game loop to yield control to the browser's event loop.
 import asyncio
 
 class WarGame:
@@ -18,8 +21,12 @@ class WarGame:
         except:
             print("Warning: Sound system failed to initialize.")
             
-        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        flags = pygame.SCALED
+        if FULLSCREEN:
+            flags |= pygame.FULLSCREEN
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags)
         pygame.display.set_caption("API WARZONE: REST DEFENDER")
+        self.fullscreen = FULLSCREEN
         self.clock = pygame.time.Clock()
         self.player_name = "PILOT_X" # Default Name
         
@@ -44,6 +51,12 @@ class WarGame:
         while True:
             events = pygame.event.get()
             for e in events:
+                if e.type == pygame.KEYDOWN:
+                    if e.key == pygame.K_f:
+                        self.fullscreen = not self.fullscreen
+                        pygame.display.toggle_fullscreen()
+                        APILogger().log("SYSTEM", f"Fullscreen Toggled: {self.fullscreen}")
+
                 if e.type == pygame.QUIT:
                     APILogger().log("SYSTEM", "Engine Shutdown")
                     APILogger().shutdown()
@@ -56,7 +69,8 @@ class WarGame:
 
             pygame.display.flip()
             self.clock.tick(FPS)
-            await asyncio.sleep(0) # Required for pygbag
+            # Yield control to the event loop (crucial for web/async compatibility)
+            await asyncio.sleep(0) 
 
 async def main():
     game = WarGame()
